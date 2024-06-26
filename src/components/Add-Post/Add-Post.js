@@ -1,12 +1,11 @@
 import React from 'react';
-import { } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Container } from 'react-bootstrap';
 
 const AddPost = () => {
     //generating auth bz we add a post of a particular user only
     const auth = localStorage.getItem('user');
-
     const uid = JSON.parse(auth)._id
     const [userid, setId] = React.useState(uid);
 
@@ -15,6 +14,7 @@ const AddPost = () => {
 
     const [error, setError] = React.useState(false);// error set for wrong input
 
+    const navigate=useNavigate();
 
     // publish post function
     const addPost = async () => {
@@ -47,6 +47,7 @@ const AddPost = () => {
            
 
         alert("Congratzz: Your post has been published")
+        navigate("/Posts")
     }
 
     //darft post function
