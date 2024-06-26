@@ -11,6 +11,7 @@ const allPost = async () => {
 // using axiosintance from utils => api.js
 //we also caching in redis   
     const response = await axiosInstance.get('/Posts');
+    
     return response.data;
 
 
@@ -21,7 +22,11 @@ const Posts = () => {
     // const [posts, setPosts] = useState([]);
 
     //usequery
-    const { data, isLoading, error } = useQuery('postData', allPost)
+    const { data, isLoading, error } = useQuery('postData', allPost,{
+        staleTime: 12000000000000000000, // for this time data is considered fresh no reload
+        //cacheTime: 300000, // 5 minutes data is in cahche
+
+    })
     if (isLoading) {
         return <h1>Loading ....</h1>;
     }

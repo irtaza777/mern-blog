@@ -151,7 +151,7 @@ app.get("/Posts/:id", verfiytoken, async (req, resp) => {
 app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
 
     const currentUsrId = req.params.id;
-
+console.log(currentUsrId)
     //method 1
     //find all posts than filte on basis of req.query id
     //let post = await posts.find();
@@ -159,17 +159,22 @@ app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
     //method 2
     //find all posts than filte on basis of req.query id
 
-    let post = await posts.find({ userid: currentUsrId } && { draft: false });
-    // post = await post.filter(post => post.userid === currentUsrId && post.draft !== true)
+    let post= await posts.find({
+        $and: [
+          { userid: currentUsrId},
+          { draft:false},
+        ]
+      });
+    //let post = await posts.find(post => post.userid === currentUsrId && post.draft !== true)
     //     post = await post.filter(post => post.userid === currentUsrId && post.draft !== false)
 
     // if(post.length>0){
     //      resp.send(post)
-    //  }
-    //  else{
+     // }
+    // else{
     //              resp.send("No record")
 
-    //  }
+    // }
     resp.send({ "msg": "Success", "post": post })
 })
 //api of singlepost only that post frontend singlepost.js
