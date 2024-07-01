@@ -5,7 +5,9 @@ const postschema = new mongoose.Schema({
     userid: String,
     title: String,
     body: String,
-    draft: Boolean
+    draft: Boolean,
+    isToggled: { type: Boolean }
+
 });
 module.exports = mongoose.model('posts', postschema);
 

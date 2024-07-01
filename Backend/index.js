@@ -5,6 +5,8 @@ require("./db/config/config")// db connection
 const users = require('./db/users/users')
 const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
+const likes = require('./db/likes/likes')
+
 const redisclient = require('./client')
 
 const jwt = require("jsonwebtoken")// JWT token
@@ -98,13 +100,13 @@ app.post("/Add-Post", verfiytoken, async (req, resp) => {
     let result = await post.save();
     resp.send(result)
     //using twilio to generate an orginal sms to your phone number
-    client.messages
-        .create({
-            body: `Your post title is :${req.body.title}`,
-            from: '+13852336630',
-            to: '+923106918068'
-        })
-        .then(message => console.log(message.sid));
+    // client.messages
+    //   .create({
+    //      body: `Your post title is :${req.body.title}`,
+    //      from: '+13852336630',
+    //      to: '+923106918068'
+    //  })
+    // .then(message => console.log(message.sid));
 
 
 })
@@ -113,16 +115,21 @@ app.post("/Add-Post", verfiytoken, async (req, resp) => {
 //Applying Redis in this api
 app.get("/Posts", verfiytoken, async (req, resp) => {
 
-    let post = await posts.find();
-    // Checking if data is in redis cache db or not if yes get it
-    const cvalue = await redisclient.get("posts")
-    if (cvalue) return resp.send(JSON.parse(cvalue))
 
-    post = await post.filter(post => post.draft !== true)
+    // Checking if data is in redis cache db or not if yes get it
+
+    //let cvalue = await redisclient.get("posts")
+   // if (cvalue) return resp.json(JSON.parse(cvalue))
+
+
+
+    let post = await posts.find();
+
+
+    post = post.filter(post => post.draft !== true)
 
     // entering data in redis 
-    await redisclient.set('posts', JSON.stringify(post))
-    await redisclient.expire('posts', 30)// exp after 30s
+    //await redisclient.set('posts', JSON.stringify(post),'EX', 10)
     if (post.length > 0) {
         resp.send(post)
     }
@@ -151,7 +158,7 @@ app.get("/Posts/:id", verfiytoken, async (req, resp) => {
 app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
 
     const currentUsrId = req.params.id;
-console.log(currentUsrId)
+    //console.log(currentUsrId)
     //method 1
     //find all posts than filte on basis of req.query id
     //let post = await posts.find();
@@ -159,18 +166,18 @@ console.log(currentUsrId)
     //method 2
     //find all posts than filte on basis of req.query id
 
-    let post= await posts.find({
+    let post = await posts.find({
         $and: [
-          { userid: currentUsrId},
-          { draft:false},
+            { userid: currentUsrId },
+            { draft: false },
         ]
-      });
+    });
     //let post = await posts.find(post => post.userid === currentUsrId && post.draft !== true)
     //     post = await post.filter(post => post.userid === currentUsrId && post.draft !== false)
 
     // if(post.length>0){
     //      resp.send(post)
-     // }
+    // }
     // else{
     //              resp.send("No record")
 
@@ -294,6 +301,31 @@ app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     resp.send(deleteall)
 
 });
+app.get('/Posts/:pid/:uid/toggle', verfiytoken, async (req, res) => {
+    console.log("hitttttttt")
+
+   // let post = new likes( {
+    //    postid:pid,
+    //    userid:uid,
+    //});
+
+      //   post=await post.save();
+      //  res.status(200).send(post);
+      try {
+        const post = await posts.findById(req.params.pid && req.params.pid);
+        console.log( post )
+
+        post.isToggled = !post.isToggled;
+        await post.save();
+        res.json(post);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+    
+   
+
+
 
 // token verication (to be implemented)
 function verfiytoken(req, resp, next) {

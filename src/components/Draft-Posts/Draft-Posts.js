@@ -76,7 +76,7 @@ const headers = {
                 
             </tr>
 
-        ):<h1>NO Drafted posts</h1>
+        ):<h1>No Drafted posts</h1>
                     }</tbody>
             </Table>  </div >)
 }

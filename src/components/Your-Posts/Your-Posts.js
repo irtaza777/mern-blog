@@ -7,7 +7,7 @@ import { useQuery } from 'react-query'
 
 //user auth
 const auth = localStorage.getItem('user');
-const id =  JSON.parse(auth)._id
+const id =  auth && JSON.parse(auth)._id
 console.log(id)
 
 // First we make an independent func in which we put our fetch api for posts of single user logged in
@@ -68,7 +68,7 @@ const YourPosts = () => {
         //usequery
 
     const { data, isLoading,error} = useQuery('fetchData',fetchYourpost,{
-        staleTime: 12000000000000000000, // for this time data is considered fresh no reload
+        //staleTime: 60000, // for this time data is considered fresh no reload
         //cacheTime: 300000, // 5 minutes data is in cahche
 
     })
