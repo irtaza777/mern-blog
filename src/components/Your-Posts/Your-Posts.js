@@ -8,7 +8,6 @@ import { useQuery } from 'react-query'
 //user auth
 const auth = localStorage.getItem('user');
 const id =  auth && JSON.parse(auth)._id
-console.log(id)
 
 // First we make an independent func in which we put our fetch api for posts of single user logged in
 //then in main func we use usequery to fetch

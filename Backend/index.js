@@ -5,7 +5,6 @@ require("./db/config/config")// db connection
 const users = require('./db/users/users')
 const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
-const likes = require('./db/likes/likes')
 
 const redisclient = require('./client')
 
@@ -324,12 +323,12 @@ let uid=req.params.uid
         const liked = post.likedBy.includes(uid);
         console.log(liked)
     if (liked) {
-      post. likeCount++;
+      post. likeCount--;
       post.likedBy = post.likedBy.filter(id => id.toString() !== uid);
 
     } else {
         
-      post. likeCount--;
+      post. likeCount++;
       post.likedBy.push(uid);
 
     }

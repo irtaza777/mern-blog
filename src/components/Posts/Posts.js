@@ -22,9 +22,7 @@ const allPost = async () => {
 const Posts = () => {
     
     // const [posts, setPosts] = useState([]);
-    const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState(0);
-    //usequery
+      //usequery
     const { data, isLoading, error } = useQuery('postData', allPost,{
         //staleTime: 12000000000000000000, // for this time data is considered fresh no reload
         //cacheTime: 300000, // 5 minutes data is in cahche
@@ -38,25 +36,8 @@ const Posts = () => {
         return <p className="error">{error.message}</p>;
     }
 
-const Addlike=async(postid,userid)=>{
-    console.log(postid)
-    
-    const response=await axiosInstance.get(`/Posts/${postid}/${userid}/toggle`);
-    setLikes(response.data.likes);
-    setLiked(response.data.liked);
 
 
-   
-}
-const buttonStyle = {
-    backgroundColor: likes ? 'red' : 'green',
-    color: 'white',
-    border: 'none',
-    padding: '5px 11px',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    
-  };
 
     return (<div className="container" >
         <br></br>

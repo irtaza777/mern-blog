@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../utils/axios';
 
 
 const Likes = ({ post }) => {
+
     const [likeCount, setLikeCount] = useState(post.likeCount);
     const [likedBy, setLikedBy] = useState(post.likedBy);
     const [liked, setLiked] = useState('');
-console.log(likedBy)
+  
     const toggleLike = async () => {
-        const res = await axiosInstance.get(`/Posts/${post._id}/${post.userid}/toggle`);
-        setLikeCount(res.data.likeCount);
+
+        const auth = localStorage.getItem('user');
+        const id =  auth && JSON.parse(auth)._id
+
+        const res = await axiosInstance.get(`/Posts/${post._id}/${id}/toggle`);
+
+        setLikeCount(console.log(res.data.likeCount));
         setLiked(res.data.liked);
         setLiked(!liked);
         if (liked) {
@@ -19,7 +24,7 @@ console.log(likedBy)
             setLikedBy([...likedBy, { _id: post.userid }]);
         }
     };
-
+  
 
     return (<div>
         <button onClick={toggleLike}>
