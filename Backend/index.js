@@ -118,8 +118,8 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
 
     // Checking if data is in redis cache db or not if yes get it
 
-    //let cvalue = await redisclient.get("posts")
-   // if (cvalue) return resp.json(JSON.parse(cvalue))
+    let cvalue = await redisclient.get("posts")
+     if (cvalue) return resp.json(JSON.parse(cvalue))
 
 
 
@@ -128,8 +128,8 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
 
     post = post.filter(post => post.draft !== true)
 
-    // entering data in redis 
-    //await redisclient.set('posts', JSON.stringify(post),'EX', 10)
+     //entering data in redis 
+     await redisclient.set('posts', JSON.stringify(post),'EX', 10)
     if (post.length > 0) {
         resp.send(post)
     }
@@ -165,6 +165,9 @@ app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
     //let post = await posts.filter(post => post.userid == x)
     //method 2
     //find all posts than filte on basis of req.query id
+    
+
+
 
     let post = await posts.find({
         $and: [
@@ -172,6 +175,7 @@ app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
             { draft: false },
         ]
     });
+
     //let post = await posts.find(post => post.userid === currentUsrId && post.draft !== true)
     //     post = await post.filter(post => post.userid === currentUsrId && post.draft !== false)
 
@@ -301,29 +305,43 @@ app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     resp.send(deleteall)
 
 });
-app.get('/Posts/:pid/:uid/toggle', verfiytoken, async (req, res) => {
-    console.log("hitttttttt")
+app.get('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
+let pid=req.params.postid
+let uid=req.params.uid
+    console.log(uid)
 
-   // let post = new likes( {
+    // let post = new likes( {
     //    postid:pid,
     //    userid:uid,
     //});
 
-      //   post=await post.save();
-      //  res.status(200).send(post);
-      try {
-        const post = await posts.findById(req.params.pid && req.params.pid);
-        console.log( post )
+    //   post=await post.save();
+    //  res.status(200).send(post);
+    try {
+        const post = await posts.findById(pid);
+        //console.log(post)
 
-        post.isToggled = !post.isToggled;
-        await post.save();
-        res.json(post);
-      } catch (err) {
+        const liked = post.likedBy.includes(uid);
+        console.log(liked)
+    if (liked) {
+      post. likeCount++;
+      post.likedBy = post.likedBy.filter(id => id.toString() !== uid);
+
+    } else {
+        
+      post. likeCount--;
+      post.likedBy.push(uid);
+
+    }
+    await post.save();
+
+    res.json({ likes: post. likeCount, liked: !liked });
+    } catch (err) {
         res.status(500).json({ error: err.message });
-      }
-    });
-    
-   
+    }
+});
+
+
 
 
 

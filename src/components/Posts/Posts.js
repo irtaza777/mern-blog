@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { useQuery } from 'react-query'
 import axiosInstance from '../../utils/axios';
+import Likes from "./Likes";
 import { useState } from "react";
 // first we make a fucn in which we fetch api then in main func we use usequery
 const allPost = async () => {
@@ -21,8 +22,8 @@ const allPost = async () => {
 const Posts = () => {
     
     // const [posts, setPosts] = useState([]);
-    const [isToggled, setIsToggled] = useState('');
-
+    const [liked, setLiked] = useState(false);
+    const [likes, setLikes] = useState(0);
     //usequery
     const { data, isLoading, error } = useQuery('postData', allPost,{
         //staleTime: 12000000000000000000, // for this time data is considered fresh no reload
@@ -41,19 +42,20 @@ const Addlike=async(postid,userid)=>{
     console.log(postid)
     
     const response=await axiosInstance.get(`/Posts/${postid}/${userid}/toggle`);
-setIsToggled(response.data.isToggled);
-
+    setLikes(response.data.likes);
+    setLiked(response.data.liked);
 
 
    
 }
 const buttonStyle = {
-    backgroundColor: isToggled ? 'green' : 'red',
+    backgroundColor: likes ? 'red' : 'green',
     color: 'white',
     border: 'none',
     padding: '5px 11px',
     cursor: 'pointer',
     borderRadius: '5px',
+    
   };
 
     return (<div className="container" >
@@ -89,13 +91,11 @@ const buttonStyle = {
                             <td >{item.title}</td>
 
                             <td>{item.body}</td>
-                            <td>{item.isToggled}</td>
+                            <td>{item.likeCount}</td>
 
                             <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
+                            <Likes key={item._id} post={item}  />
 
-<button style={buttonStyle} onClick={() => Addlike(item._id,item.userid) }>
-        {isToggled ? 'Like' : 'Not Liked'}
-      </button>
      
                         </tr>
 
