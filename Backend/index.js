@@ -97,6 +97,7 @@ app.post("/Add-Post", verfiytoken, async (req, resp) => {
 
     let post = new posts(req.body);
     let result = await post.save();
+
     resp.send(result)
     //using twilio to generate an orginal sms to your phone number
     // client.messages
