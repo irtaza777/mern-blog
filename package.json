@@ -1,5 +1,7 @@
 {
   "name": "blog",
+  "homepage":"https://mern-blog-eight-gamma.vercel.app/" ,
+
   "version": "0.1.0",
   "private": true,
   "dependencies": {

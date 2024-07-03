@@ -52,13 +52,13 @@ const Posts = () => {
 
     {
                     data.length > 0 ? data.map((item, index) =>
-      <div class="col-3">
+      <div class="col-4">
 
                             <h5 class="mb-1">{item.title}</h5>
 
                             <p class="mb-1">{item.body}</p>
 
-                            <Link to={"/singlepost/" + item._id}><button className="btn btn-success ml-2">Read</button></Link>
+                            <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
                             <Likes key={item._id} post={item}  />
                             </div>
      

@@ -38,16 +38,15 @@
 }
 .logout-button{
   color: red;
-  margin-left:950px;
   text-decoration: none;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
 }
 
 .nav-ul li a {
-  color: white;
+  color: black;
   text-decoration: none;
-    font-size: 15px;
+    font-size: 16px;
 }
 .write-block{
   background-color: rgb(63, 80, 80);
@@ -62,6 +61,7 @@ border-radius: 10px;
 }
 .navbar {
   display: none;
+
 }
 
 .navbar.open {

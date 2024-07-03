@@ -1,11 +1,9 @@
 import React from "react";
 
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from "react";
 
 //stateless func comp
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
   const auth = localStorage.getItem('user');
 
@@ -15,14 +13,12 @@ const NavBar = () => {
     navigate("/Register");
   }
 
-  const toggleNavbar = () => {
-    setIsOpen(!isOpen);
-  };
+  
   return (
     
 <div>
   
-    <nav className="navbar navbar-expand-lg navbar-light bg-dark">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
       <ul className="navbar-nav nav-ul">
         <li className="nav-item nav-link">        
