@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../utils/axios';
 
 
@@ -7,8 +7,13 @@ const Likes = ({ post }) => {
     const [likeCount, setLikeCount] = useState(post.likeCount);
     const [likedBy, setLikedBy] = useState(post.likedBy);
     const [liked, setLiked] = useState('');
-  
+ 
+    useEffect(()=>{
+
+    },[post.likeCount])
+
     const toggleLike = async () => {
+        
 
         const auth = localStorage.getItem('user');
         const id =  auth && JSON.parse(auth)._id
