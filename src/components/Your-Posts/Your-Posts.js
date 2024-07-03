@@ -7,8 +7,7 @@ import { useQuery } from 'react-query'
 
 //user auth
 const auth = localStorage.getItem('user');
-const id =  JSON.parse(auth)._id
-console.log(id)
+const id =  auth && JSON.parse(auth)._id
 
 // First we make an independent func in which we put our fetch api for posts of single user logged in
 //then in main func we use usequery to fetch
@@ -68,7 +67,7 @@ const YourPosts = () => {
         //usequery
 
     const { data, isLoading,error} = useQuery('fetchData',fetchYourpost,{
-        staleTime: 12000000000000000000, // for this time data is considered fresh no reload
+        //staleTime: 60000, // for this time data is considered fresh no reload
         //cacheTime: 300000, // 5 minutes data is in cahche
 
     })
@@ -86,16 +85,12 @@ const YourPosts = () => {
     return (< div className="container" >
         <br></br>
         <h3>Blogs</h3>
-        <button className="btn btn-danger m-2 " onClick={() => Deleteall()}>Delete</button>
 
         <Table responsive striped bordered hover>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>User id</th>
-                    <th>Post id</th>
-                    <th>title</th>
-                    <th>body</th>
+                    <th>Title</th>
+                    <th>Body</th>
                     <th>Operations</th>
 
 
@@ -109,12 +104,9 @@ const YourPosts = () => {
                 {
                     data.length > 0 ? data.map((item, index) =>
                         <tr>
-                            <td>{index + 1} </td>
-                            <td>{item.userid} </td>
-                            <td>{item._id} </td>
                             <td>{item.title}</td>
                             <td>{item.body}</td>
-                            <td>    <Link to={"/Update-Post/" + item._id}><button className="btn btn-success">Edit</button></Link>
+                            <td>    <Link to={"/Update-Post/" + item._id}><button className="btn btn-success m-2">Edit</button></Link>
                                 <button class="btn btn-danger m-2" onClick={() => Deletepost(item._id)}>Delete</button>
                             </td>
 
@@ -123,7 +115,10 @@ const YourPosts = () => {
 
                     )
                         : <h1>No post found</h1>}</tbody>
-        </Table>  </div >);
+        </Table>  
+        <button className="btn btn-danger " onClick={() => Deleteall()}>Delete All</button>
+
+        </div >);
 }
 
 export default YourPosts;

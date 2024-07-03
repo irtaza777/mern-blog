@@ -4,7 +4,8 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { useQuery } from 'react-query'
 import axiosInstance from '../../utils/axios';
-
+import Likes from "./Likes";
+import { useState } from "react";
 // first we make a fucn in which we fetch api then in main func we use usequery
 const allPost = async () => {
 
@@ -19,13 +20,16 @@ const allPost = async () => {
 };
 //Main func
 const Posts = () => {
+    
     // const [posts, setPosts] = useState([]);
-
-    //usequery
+      //usequery
     const { data, isLoading, error } = useQuery('postData', allPost,{
-        staleTime: 12000000000000000000, // for this time data is considered fresh no reload
-        //cacheTime: 300000, // 5 minutes data is in cahche
-
+        //cacheTime: 1000 * 60 * 5, // Cache data for 5 minutes
+       // staleTime: 1000 * 60 * 1, // Consider data fresh for 1 minute
+        //refetchOnWindowFocus: false, // Disable refetch on window focus
+        //refetchOnReconnect: false, // Disable refetch on reconnect
+        //refetchInterval: false, // Disable polling
+//enabled: true // You can control this based on certain conditions
     })
     if (isLoading) {
         return <h1>Loading ....</h1>;
@@ -38,46 +42,33 @@ const Posts = () => {
 
 
 
-    return (<div className="container" >
-        <br></br>
-        <h3>Blogs</h3>
-        <Table responsive striped bordered hover>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>User id</th>
-                    <th>Post id</th>
+    return (
+    <div>
+    <div class="container">
+    <header class="mb-4">
+      <h1 class="text-center">All Posts</h1>
+    </header>
+    <div class="row">
 
-                    <th>Title</th>
-                    <th>Body</th>
-                    <th>Operations</th>
-
-
-                </tr>
-            </thead>
-
-
-            <tbody>
-
-
-                {
+    {
                     data.length > 0 ? data.map((item, index) =>
-                        <tr key={item._id}>
+      <div class="col-4">
 
-                            <td >{index + 1} </td>
-                            <td>{item.userid}</td>
-                            <td >{item._id}</td>
-                            <td >{item.title}</td>
+                            <h5 class="mb-1">{item.title}</h5>
 
-                            <td>{item.body}</td>
+                            <p class="mb-1">{item.body}</p>
+
                             <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
-
-
-                        </tr>
-
-                    ) : <h1>No posts yet</h1>}
-            </tbody>
-        </Table>  </div >)
+                            <Likes key={item._id} post={item}  />
+                            </div>
+     
+  ) : <h1>No posts yet</h1>}
+            </div>
+            
+            </div>
+            </div>
+        
+         )
 }
 
 export default Posts;
