@@ -7,8 +7,8 @@ const postschema = new mongoose.Schema({
     body: String,
     draft: Boolean,
     likeCount: { type: Number, default: 0 },
-    likedBy: { type: [mongoose.Schema.Types.ObjectId], ref: 'users', default: [] }
-
+   // likedBy: { type: [mongoose.Schema.Types.ObjectId], ref: 'users', default: [] },
+   // like: { type: Boolean },
 
 });
 module.exports = mongoose.model('posts', postschema);

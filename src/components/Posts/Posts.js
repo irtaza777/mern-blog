@@ -1,6 +1,4 @@
-import React from "react";
-import Table from 'react-bootstrap/Table';
-import axios from 'axios';
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from 'react-query'
 import axiosInstance from '../../utils/axios';
@@ -18,19 +16,31 @@ const allPost = async () => {
 
 
 };
+//fetching likes collection to send to likesjs
+
 //Main func
 const Posts = () => {
-    
-    // const [posts, setPosts] = useState([]);
+  const [Allikes, setAlllikes] = useState([]);
+
+  
+  
+  useEffect(()=>{
+axiosInstance.get('/Likes').then((res) => setAlllikes(res.data))
+
+console.log('Allikes', Allikes)
+  
+ },[Likes])
+  
       //usequery
     const { data, isLoading, error } = useQuery('postData', allPost,{
-        //cacheTime: 1000 * 60 * 5, // Cache data for 5 minutes
-       // staleTime: 1000 * 60 * 1, // Consider data fresh for 1 minute
-        //refetchOnWindowFocus: false, // Disable refetch on window focus
-        //refetchOnReconnect: false, // Disable refetch on reconnect
+      //  cacheTime: 0, // No cache
+        //staleTime: 1000 * 60 * 1, // Consider data fresh for 1 minute
+        refetchOnWindowFocus: false, // Disable refetch on window focus
+        refetchOnReconnect: false, // Disable refetch on reconnect
         //refetchInterval: false, // Disable polling
 //enabled: true // You can control this based on certain conditions
     })
+    
     if (isLoading) {
         return <h1>Loading ....</h1>;
     }
@@ -39,19 +49,21 @@ const Posts = () => {
         return <p className="error">{error.message}</p>;
     }
 
+    
 
-
-
+    
     return (
     <div>
     <div class="container">
     <header class="mb-4">
       <h1 class="text-center">All Posts</h1>
+      
     </header>
     <div class="row">
 
     {
                     data.length > 0 ? data.map((item, index) =>
+                    
       <div class="col-4">
 
                             <h5 class="mb-1">{item.title}</h5>
@@ -59,13 +71,15 @@ const Posts = () => {
                             <p class="mb-1">{item.body}</p>
 
                             <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
-                            <Likes key={item._id} post={item}  />
+                            <Likes key={item._id} post={item} likes={Allikes.filter(like => like.postid === item._id && like.userid === item.userid)}  />
                             </div>
      
   ) : <h1>No posts yet</h1>}
+   
             </div>
             
             </div>
+           
             </div>
         
          )

@@ -19,7 +19,7 @@ const id =JSON.parse(auth)._id
         axios.get(url, { headers }).then((res) => setposts(res.data.post))
 
         
-            },[id])
+            },[id,setposts])
             
  const Deletepost= async (id)=>{
             console.warn(id)

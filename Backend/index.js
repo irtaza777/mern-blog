@@ -5,6 +5,7 @@ require("./db/config/config")// db connection
 const users = require('./db/users/users')
 const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
+const likes = require('./db/likes/likes')
 
 const redisclient = require('./client')
 
@@ -118,8 +119,8 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
 
     // Checking if data is in redis cache db or not if yes get it
 
-    let cvalue = await redisclient.get("posts")
-     if (cvalue) return resp.json(JSON.parse(cvalue))
+    //let cvalue = await redisclient.get("posts")
+    // if (cvalue) return resp.json(JSON.parse(cvalue))
 
 
 
@@ -128,8 +129,8 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
 
     post = post.filter(post => post.draft !== true)
 
-     //entering data in redis 
-     await redisclient.set('posts', JSON.stringify(post),'EX', 10)
+    //entering data in redis 
+    // await redisclient.set('posts', JSON.stringify(post),'EX', 30)
     if (post.length > 0) {
         resp.send(post)
     }
@@ -165,7 +166,7 @@ app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
     //let post = await posts.filter(post => post.userid == x)
     //method 2
     //find all posts than filte on basis of req.query id
-    
+
 
 
 
@@ -305,45 +306,98 @@ app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     resp.send(deleteall)
 
 });
-app.get('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
-let pid=req.params.postid
-let uid=req.params.uid
+app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
+    let pid = req.params.postid
+    let uid = req.params.uid
     console.log(uid)
-
-    // let post = new likes( {
-    //    postid:pid,
-    //    userid:uid,
-    //});
-
-    //   post=await post.save();
-    //  res.status(200).send(post);
     try {
         const post = await posts.findById(pid);
-        //console.log(post)
+        // console.log(post)
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
 
-        const liked = post.likedBy.includes(uid);
-        console.log(liked)
-    if (liked) {
-      post. likeCount--;
-      post.likedBy = post.likedBy.filter(id => id.toString() !== uid);
+        let like = await likes.findOne({ userid: uid, postid: pid });
+        console.log(like);
 
-    } else {
-        
-      post. likeCount++;
-      post.likedBy.push(uid);
+        if (like) {
 
-    }
-    await post.save();
+            // User has already liked the post, so unlike it
+            if (like.liked === true) {
 
-    res.json({ likes: post. likeCount, liked: !liked });
+                like.liked =false;
+                post.likeCount--;
+            } else {
+                like.liked = true;
+                post.likeCount++;
+
+            }
+        } else {
+            // User has not liked the post yet, so like it
+            like = new likes({ postid: pid, userid: uid, liked: true});
+            post.likeCount++;
+        }
+
+        await like.save();
+        await post.save();
+
+        res.json({ likeCount: post.likeCount, liked: like.liked });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+    /*   let alike = new likes({
+           userid: uid,
+           postid: pid,
+       });
+       
+   
+           const liked = alike.uid;
+           console.log(liked)
+       if (liked) {
+       //user already liked post so unlike it
+      alike.likeCount--;
+       alike.LikedBy = alike.LikedBy.filter(id => id.toString() !== uid);
+       alike.like=false;
+   
+       }
+       else {
+    alike. likeCount++;
+    alike.LikedBy.push(uid);
+    alike.like=true;
+   
+    }
+   
+    let result=await alike.save();
+   
+       res.json(result);
+       */
+
 });
 
 
+app.get("/Likes", verfiytoken, async (req, resp) => {
 
 
+    let like = await likes.find();
+console.log(like)
+    if (like.length > 0) {
+        resp.send(like)
+    }
+    else {
+        resp.send([])
+
+    }})
+    app.get('/Posts/:postId/:userId/likeStatus', async (req, res) => {
+        const { postId, userId } = req.params;
+    
+        try {
+            const like = await likes.findOne({ postid: postId, userid: userId });
+            res.json({ liked: like ? like.liked : false });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    });
+    
 
 // token verication (to be implemented)
 function verfiytoken(req, resp, next) {
