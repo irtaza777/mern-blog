@@ -19,12 +19,12 @@ function App() {
     <div >
       <Navbar />
         <Routes>
-                    <Route path="/" element={<h1>Welcome to blog website</h1>}></Route>
 
           <Route path="*" element={<Error/>}></Route>
                     <Route path="/Home" element={<Home />}></Route>
 
         <Route element={<PrivateComponent />}>
+        <Route path="/" element={<Home />}></Route>
 
           <Route path="/Posts" element={<Posts />}></Route>
           <Route path="/Add-Post" element={<AddPost />}></Route>

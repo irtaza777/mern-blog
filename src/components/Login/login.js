@@ -32,7 +32,7 @@ const Login = () => {
             localStorage.setItem("user", JSON.stringify(result.user));
             localStorage.setItem("token", JSON.stringify(result.auth));
 
-            navigate('/Home');
+            navigate('/Posts');
 
         }
         else { alert("Please enter correct details") }

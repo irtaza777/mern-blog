@@ -21,9 +21,7 @@ const NavBar = () => {
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
       <ul className="navbar-nav nav-ul">
-        <li className="nav-item nav-link">        
-         <Link to="/Home">Home</Link>
-        </li>
+        
         <li className="nav-item nav-link">        
 
           <Link to="/Posts">Posts</Link>
