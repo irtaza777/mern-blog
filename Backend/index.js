@@ -285,10 +285,9 @@ app.delete("/Posts/:draftpostid", verfiytoken, async (req, resp) => {
 });
 //deleting singlepost with all comments of it yourpost.js
 app.delete("/Poosts/:postid", verfiytoken, async (req, resp) => {
-    console.log(req.params.postid, "2")
     await posts.deleteOne({ _id: req.params.postid });
+    await likes.deleteOne({ postid: req.params.postid });
 
-    console.log(req.params.postid)
 
     await comments.deleteMany({ pid: req.params.postid });
     resp.send({ "msg": true })
@@ -300,6 +299,8 @@ app.delete("/Poosts/:postid", verfiytoken, async (req, resp) => {
 app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     // console.log("All")
     await comments.deleteMany({ userid: req.params.Delid })
+    await likes.deleteMany({ userid: req.params.Delid })
+
     let deleteall = await posts.deleteMany({ userid: req.params.Delid });
     //console.log(deleteall)
 
