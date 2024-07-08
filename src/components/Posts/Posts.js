@@ -20,16 +20,10 @@ const allPost = async () => {
 
 //Main func
 const Posts = () => {
-  const [Allikes, setAlllikes] = useState([]);
 
   
   
-  useEffect(()=>{
-axiosInstance.get('/Likes').then((res) => setAlllikes(res.data))
-
-console.log('Allikes', Allikes)
   
- },[Likes])
   
       //usequery
     const { data, isLoading, error } = useQuery('postData', allPost,{
@@ -71,7 +65,7 @@ console.log('Allikes', Allikes)
                             <p class="mb-1">{item.body}</p>
 
                             <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
-                            <Likes key={item._id} post={item} likes={Allikes.filter(like => like.postid === item._id && like.userid === item.userid)}  />
+                            <Likes key={item._id} post={item} />
                             </div>
      
   ) : <h1>No posts yet</h1>}

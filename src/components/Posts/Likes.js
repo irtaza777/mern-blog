@@ -5,8 +5,7 @@ import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 
 
-const Likes = ({ post,likes }) => {
-console.log('likes.liked', likes.liked)
+const Likes = ({ post}) => {
     const [likeCount, setLikeCount] = useState(post.likeCount);
     const [liked, setLiked] = useState('');
     const auth = localStorage.getItem('user');
