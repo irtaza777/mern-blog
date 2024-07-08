@@ -47,12 +47,12 @@ const Posts = () => {
 
         </header>
         <div class="row">
+        <div class="col-4">
 
           {
             data.length > 0 ? data.map((item, index) =>
 
-              <div class="col-4">
-
+                <>
                 <h5 class="mb-1">{item.title}</h5>
 
                 <p class="mb-1">{item.body}</p>
@@ -60,9 +60,9 @@ const Posts = () => {
                 <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
 
                 <Likes key={item._id} post={item} />
-              </div>
+                </>
+            ) : <h1>No posts yet</h1>}              </div>
 
-            ) : <h1>No posts yet</h1>}
 
         </div>
 

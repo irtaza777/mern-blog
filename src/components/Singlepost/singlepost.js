@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect } from 'react';
-import Table from 'react-bootstrap/Table';
 const SinglePost = () => {
     const auth = localStorage.getItem('user');
 
@@ -61,10 +60,12 @@ const SinglePost = () => {
 
         axios.delete(`http://localhost:4500/Comments/${userid}/${postid}/${id}`, { headers })
             .then((res) => setComments(res.data))
+            window.location.reload();
+
     }
 
     useEffect(() => {
-
+        
         //api to retrive singlepost by its id
         const headers = {
             "Content-Type": "application/json",
@@ -72,13 +73,13 @@ const SinglePost = () => {
 
         };
 
-//fetching post of that id only
+        //fetching post of that id only
         const url_singlepost_id = `http://localhost:4500/singlepost/${params.id}`;
 
         axios.get(url_singlepost_id, { headers }).then((res) => setPosts(res.data))
         //api end
 
-       
+
     }, [params.id])
 
     useEffect(() => {
@@ -101,7 +102,6 @@ const SinglePost = () => {
         axios.get(urlc, { headers }).then((res) => setComments(res.data))
 
         //console.log("::", comments)
-
     }, [isCmmentUpdated])
 
 
@@ -109,90 +109,52 @@ const SinglePost = () => {
 
     return (<div className="container">
         <br></br>
-        <Table responsive striped bordered hover>
-            <thead>
-                <tr>
-
-                    <th>User id</th>
-                    <th>Post id</th>
-                    <th>title</th>
-                    <th>body</th>
-
-
-                </tr>
-            </thead>
-
-
-            <tbody>
+        <div class="row">
+            <div class="col-10">
 
 
 
 
-                <tr key={posts._id}>
-                    <td >{posts.userid}</td>
-                    <td >{posts._id}</td>
-                    <td >{posts.title}</td>
-                    <td>{posts.body}</td>
+                <h5 class="mb-1">{posts.title}</h5>
 
-
-
-                </tr>
-
-
-            </tbody>
-        </Table>
-        <div className="container">
-            <input type="text" className="form-control"
-                value={pid} onChange={(e) => { setPid(e.target.value) }} hidden />
-            Comments <textarea className="form-control" placeholder="Comments" rows="2" cols="5"
-                value={comment} onChange={(e) => { setComment(e.target.value) }} required></textarea>
-            {error && !comment && <span style={{ color: "red" }}>giva a comment</span>}
-
-            <br></br>
-            <button onClick={() => addcomment(posts._id)} type="submit" className="btn btn-primary">Comment</button>
+                <p class="mb-1">{posts.body}</p>
+            </div>
         </div>
         <br></br>
-        <div className="container"><h2>Comments</h2>
+        <div className="row " style={{ backgroundColor: 'lightgrey', padding: '20px' }}>
+            <h2>Comments</h2>
+            <div className="col-6">
+                <input type="text" className="form-control"
+                    value={pid} onChange={(e) => { setPid(e.target.value) }} hidden />
+                <textarea className="form-control" placeholder="Comments" rows="1" cols="2"
+                    value={comment} onChange={(e) => { setComment(e.target.value) }} required></textarea>
+                {error && !comment && <span style={{ color: "red" }}>giva a comment</span>}
 
-            <Table responsive striped bordered hover>
-                <thead>
-                    <tr>
+            </div>
+            <div className="col-2">
 
+                <button onClick={() => addcomment(posts._id)} type="submit" className="btn btn-primary">Comment</button>
+            </div>
 
-                        <th>Comment</th>
-                        <th>comment id</th>
-                        <th>Post id</th>
-
-                        <th>Operations</th>
-
-
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    {
-                        comments.length > 0 ? comments.map((item, index) =>
-                            <tr>
-                                <td>{item.comment} </td>
-                                <td>{item._id} </td>
-                                <td>{item.pid} </td>
-                                <td> <button class="btn btn-danger m-2" onClick={() => Deletecomment(item._id)}>Delete</button>
-                                </td>
-
-
-
-                            </tr>
-
-
-                        ) : <h1>No Comments yet</h1>
-
-
-
-                    }</tbody>
-            </Table>
         </div>
+        <div className="row " style={{ backgroundColor: 'lightgrey'}}>
 
+        {
+            comments.length > 0 ? comments.map((item, index) =>
+                <tr>
+                            <div className="col-6" style={{marginLeft:'20px'}}>
+
+                    <td>{item.comment} <button class="btn btn-danger "style={{position:'relative', marginleft:'2px'}} onClick={() => Deletecomment(item._id)}>Delete</button>
+</td>
+
+                    </div>
+                    <br></br>
+
+
+
+
+                </tr>) : <h3>No Comments yet</h3>}
+                </div >
     </div >);
 
 }
