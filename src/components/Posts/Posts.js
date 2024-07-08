@@ -65,6 +65,7 @@ const Posts = () => {
                             <p class="mb-1">{item.body}</p>
 
                             <Link to={"/singlepost/" + item._id}><button className="btn btn-success">Read</button></Link>
+                          
                             <Likes key={item._id} post={item} />
                             </div>
      

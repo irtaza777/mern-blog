@@ -306,6 +306,7 @@ app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     resp.send(deleteall)
 
 });
+//like toggle api front end is likes.js
 app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
     let pid = req.params.postid
     let uid = req.params.uid
@@ -374,7 +375,7 @@ app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
 
 });
 
-
+//fetching like so in front end post.js we can send props to likes.js (its no needed anymore )
 app.get("/Likes", verfiytoken, async (req, resp) => {
 
 

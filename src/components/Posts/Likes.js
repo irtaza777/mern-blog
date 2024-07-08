@@ -10,9 +10,9 @@ const Likes = ({ post}) => {
     const [liked, setLiked] = useState('');
     const auth = localStorage.getItem('user');
     const id =  auth && JSON.parse(auth)._id
+    
+    // liked status of that user liked post
     useEffect(() => {
-       
-
         if (id ) {
             axiosInstance.get(`/Posts/${post._id}/${id }/likeStatus`).then((res) => {
                 setLiked(res.data.liked);
@@ -21,6 +21,7 @@ const Likes = ({ post}) => {
             });
         }
     }, [post._id]);
+    //api to enter state of toogle in db
     const toggleLike = async () => {
         
 
@@ -40,7 +41,8 @@ const Likes = ({ post}) => {
 
     return (<div>
         <button onClick={toggleLike} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-            {liked ? 'unlike' : 'like'} Total Likes : ({likeCount})
+        <FontAwesomeIcon icon={liked ? regularHeart : solidHeart} color={liked ? 'red' : 'gray'} size="2x" />
+        {likeCount}
         </button>
     </div>);
 }
