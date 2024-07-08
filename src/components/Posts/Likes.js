@@ -20,7 +20,7 @@ const Likes = ({ post}) => {
                 console.error('Error fetching like status:', error);
             });
         }
-    }, [post._id]);
+    }, [id,post._id]);
     //api to enter state of toogle in db
     const toggleLike = async () => {
         
