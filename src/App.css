@@ -63,7 +63,17 @@ border-radius: 10px;
   display: none;
 
 }
+.custom-link {
 
+  color: black; /* Example color */
+  text-decoration:none;
+  
+ /* Hover effect */
+ transition: color 0.3s ease; /* Smooth transition for color change */}
+ .custom-link:hover {
+  color: #a54141; /* Example color change on hover */
+  text-decoration: none; /* Ensure no underline on hover */
+}
 .navbar.open {
   display: block;
 }
