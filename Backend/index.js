@@ -115,30 +115,29 @@ app.post("/Add-Post", verfiytoken, async (req, resp) => {
 
 //Applying Redis in this api
 app.get("/Posts", verfiytoken, async (req, resp) => {
+    try {
+        // Checking if data is in Redis cache db or not, if yes get it
+        //let cachedPosts = await redisclient.get("posts");
+      //  if (cachedPosts) {
+      //      return resp.json(JSON.parse(cachedPosts));
+      //  }
 
+        // Fetching posts from the database
+        let post = await posts.find({ draft: false });
 
-    // Checking if data is in redis cache db or not if yes get it
+        // Entering data in Redis
+       // await redisclient.set('posts', JSON.stringify(post), 'EX', 10);
 
-    //let cvalue = await redisclient.get("posts")
-    // if (cvalue) return resp.json(JSON.parse(cvalue))
-
-
-
-    let post = await posts.find();
-
-
-    post = post.filter(post => post.draft !== true)
-
-    //entering data in redis 
-    // await redisclient.set('posts', JSON.stringify(post),'EX', 30)
-    if (post.length > 0) {
-        resp.send(post)
+        if (post.length > 0) {
+            return resp.json({ post }); // Send a response with the fetched posts
+        } else {
+            return resp.json([]); // Send an empty array if no posts found
+        }
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        return resp.status(500).json({ message: "Internal server error" });
     }
-    else {
-        resp.send([])
-
-    }
-})
+});
 //drafted post with id frontend draftpost
 app.get("/Posts/:id", verfiytoken, async (req, resp) => {
     const currentUsrId = req.params.id;
@@ -327,7 +326,7 @@ app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
             // User has already liked the post, so unlike it
             if (like.liked === true) {
 
-                like.liked =false;
+                like.liked = false;
                 post.likeCount--;
             } else {
                 like.liked = true;
@@ -336,7 +335,7 @@ app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
             }
         } else {
             // User has not liked the post yet, so like it
-            like = new likes({ postid: pid, userid: uid, liked: true});
+            like = new likes({ postid: pid, userid: uid, liked: true });
             post.likeCount++;
         }
 
@@ -381,25 +380,26 @@ app.get("/Likes", verfiytoken, async (req, resp) => {
 
 
     let like = await likes.find();
-console.log(like)
+    console.log(like)
     if (like.length > 0) {
         resp.send(like)
     }
     else {
         resp.send([])
 
-    }})
-    app.get('/Posts/:postId/:userId/likeStatus', async (req, res) => {
-        const { postId, userId } = req.params;
-    
-        try {
-            const like = await likes.findOne({ postid: postId, userid: userId });
-            res.json({ liked: like ? like.liked : false });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    });
-    
+    }
+})
+app.get('/Posts/:postId/:userId/likeStatus', async (req, res) => {
+    const { postId, userId } = req.params;
+
+    try {
+        const like = await likes.findOne({ postid: postId, userid: userId });
+        res.json({ liked: like ? like.liked : false });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 // token verication (to be implemented)
 function verfiytoken(req, resp, next) {
