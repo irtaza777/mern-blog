@@ -1,0 +1,38 @@
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+
+  }
+  .navbar-nav .nav-link {
+    color: black !important; /* Apply black color with high specificity */
+  }
+  
+  .nav-item-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+
+  }
+  
+  .logout-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .logout-button {
+    margin-right: 10px;
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .img-rounded {
+    max-height: 44px;
+    width: 44px;
+    border-radius: 100%;
+    margin-left: 10px;
+  }
+  

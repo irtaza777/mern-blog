@@ -1,53 +1,58 @@
 import React from "react";
-
 import { Link, useNavigate } from 'react-router-dom';
+import '../../Css/Navbar/NavBar.css'; // Ensure you import the CSS file
 
-//stateless func comp
 const NavBar = () => {
-
-  const auth = localStorage.getItem('user');
-
+  const auth = JSON.parse(localStorage.getItem('user'));
   const navigate = useNavigate();
+  
   const logout = () => {
     localStorage.clear();
     navigate("/Register");
-  }
+  };
 
-  
   return (
-    
-<div>
-  
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-      <ul className="navbar-nav nav-ul">
-        
-        <li className="nav-item nav-link">        
-
-          <Link to="/Posts">Posts</Link>
-        </li>
-        <li className="nav-item nav-link">        
-          <Link to="/Add-Post">Add posts</Link>
-        </li>
-        <li className="nav-item nav-link">
-          <Link to="/Your-Posts">Your posts</Link>
-        </li>
-        <li className="nav-item nav-link">
-          <Link to="/Draft-Posts">Drafted posts</Link>
-        </li>
-        
-        
-
-        <li className="nav-item nav-link">       
-          {auth ? <Link onClick={logout} to="/Register"><span className="logout-button"> Logout ({JSON.parse(auth).name}) </span> </Link> :
-
-                <Link to="/Login">Login</Link>}
-
-        </li>
-      </ul>
-    </nav>
+    <div>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav mr-auto">
+            <li className="nav-item">
+              <Link className="nav-link" to="/Posts">Posts</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/Add-Post">Add posts</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/Your-Posts">Your posts</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/Draft-Posts">Drafted posts</Link>
+            </li>
+            <li className="nav-item">
+              {auth ? (
+                <div className="nav-item-content">
+                  <Link onClick={logout} to="/Register" className="logout-link">
+                    <span className="logout-button">Logout ({auth.name})</span>
+                  </Link>
+                  {auth.imageUrl && (
+                    <img
+                      className="img-rounded"
+                      src={auth.imageUrl}
+                      alt="Profile"
+                    />
+                  )}
+                </div>
+              ) : (
+                <Link className="nav-link" to="/Login">Login</Link>
+              )}
+            </li>
+          </ul>
+        </div>
+      </nav>
     </div>
-
   );
 };
 

@@ -51,7 +51,6 @@ const Posts = () => {
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
   return (
     <div>
       <div class="container">
@@ -81,9 +80,9 @@ const Posts = () => {
                 <Link to={"/singlepost/" + item._id} className="custom-link" >
                   {item.imageUrl && (
                     <>
-                      <img className="img-responsive" style={{ maxHeight: '300px', width: '100%', objectFit: 'cover', padding: '2px' }}
+                      <img className="img-responsive" style={{ maxHeight: '300px', width: '100%', objectFit: 'cover', borderRadius: '30px' }}
 
-                        src={`http://localhost:4500${item.imageUrl}`}
+                        src={item.imageUrl}
                         alt="Post"
 
                       />
