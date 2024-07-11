@@ -73,6 +73,11 @@ border-radius: 10px;
  .custom-link:hover {
   color: #a54141; /* Example color change on hover */
   text-decoration: none; /* Ensure no underline on hover */
+  font-weight: normal; /* Ensure the font-weight is set to normal */
+
+}
+postimage{
+  width: 50px;
 }
 .navbar.open {
   display: block;

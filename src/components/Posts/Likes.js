@@ -12,15 +12,21 @@ const Likes = ({ post }) => {
     const id = auth && JSON.parse(auth)._id
 
     // liked status of that user liked post
+    // Memoize the id and post._id to avoid unnecessary re-renders
+    
     useEffect(() => {
+        console.log('useEffect triggered');
         if (id) {
-            axiosInstance.get(`/Posts/${post._id}/${id}/likeStatus`).then((res) => {
-                setLiked(res.data.liked);
-            }).catch((error) => {
-                console.error('Error fetching like status:', error);
-            });
+            axiosInstance.get(`/Posts/${post._id}/${id}/likeStatus`)
+                .then((res) => {
+                    setLiked(res.data.liked);
+                })
+                .catch((error) => {
+                    console.error('Error fetching like status:', error);
+                })
+               
         }
-    }, [id, post._id]);
+    }, [id,post._id]);
 
     //api to enter state of toogle in db
 
@@ -29,6 +35,7 @@ const Likes = ({ post }) => {
 
         setLikeCount(res.data.likeCount);
         setLiked(res.data.liked);
+        
     };
 
 
