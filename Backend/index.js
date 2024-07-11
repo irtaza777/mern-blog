@@ -7,7 +7,7 @@ const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
 const likes = require('./db/likes/likes')
 
-const redisclient = require('./client')
+const redisclient = require('./redisclient')
 
 const jwt = require("jsonwebtoken")// JWT token
 const jwtkey = "blog "// JWT token key
@@ -18,6 +18,12 @@ const client = require('twilio')(accountSid, authToken);
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 
+//for image
+const path = require('path');
+//upload middleware for image
+const upload = require('./middleware/upload');
+
+
 const cors = require("cors");// To avoid cors error which is by default blocking feature of browser
 //from front end to back end
 
@@ -27,6 +33,7 @@ const app = express();
 app.use(cors());
 
 app.use(express.json())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 
@@ -94,12 +101,27 @@ app.post("/Login", async (req, resp) => {
 
 //Adding post Api front end is AddPost/AddPost.js
 
-app.post("/Add-Post", verfiytoken, async (req, resp) => {
+app.post("/Add-Post", verfiytoken,upload.single('image') ,async (req, resp) => {
 
-    let post = new posts(req.body);
-    let result = await post.save();
-
-    resp.send(result)
+    try {
+        const { title, body,userid,draft  } = req.body;
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    
+        const newPost = new posts({
+          title,
+          body,
+          userid,
+          imageUrl,
+          draft
+          
+        });
+       
+    
+        await newPost.save();
+        resp.status(201).json(newPost);
+      } catch (err) {
+        resp.status(500).json({ error: err.message });
+      }
     //using twilio to generate an orginal sms to your phone number
     // client.messages
     //   .create({
@@ -115,29 +137,26 @@ app.post("/Add-Post", verfiytoken, async (req, resp) => {
 
 //Applying Redis in this api
 app.get("/Posts", verfiytoken, async (req, resp) => {
-    try {
         // Checking if data is in Redis cache db or not, if yes get it
-        //let cachedPosts = await redisclient.get("posts");
-      //  if (cachedPosts) {
-      //      return resp.json(JSON.parse(cachedPosts));
-      //  }
+
+        let cachedPosts = await redisclient.get("posts");
+       if (cachedPosts) {
+            return resp.json(JSON.parse(cachedPosts));
+        }
 
         // Fetching posts from the database
         let post = await posts.find({ draft: false });
 
         // Entering data in Redis
-       // await redisclient.set('posts', JSON.stringify(post), 'EX', 10);
+        await redisclient.set('posts', JSON.stringify(post), 'EX', 30);
 
         if (post.length > 0) {
-            return resp.json({ post }); // Send a response with the fetched posts
+           return resp.json( post ); // Send a response with the fetched posts
         } else {
             return resp.json([]); // Send an empty array if no posts found
         }
-    } catch (error) {
-        console.error("Error fetching posts:", error);
-        return resp.status(500).json({ message: "Internal server error" });
-    }
-});
+    }) 
+;
 //drafted post with id frontend draftpost
 app.get("/Posts/:id", verfiytoken, async (req, resp) => {
     const currentUsrId = req.params.id;
