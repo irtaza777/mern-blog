@@ -17,6 +17,7 @@ const authToken = 'a99c70c5a4406376320e63745a21eaf9';
 const client = require('twilio')(accountSid, authToken);
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
+const cloudinary = require('cloudinary').v2;
 
 //for image
 const path = require('path');
@@ -63,19 +64,35 @@ cron.schedule('* * * * *', () => {
             console.log(info);
     });
 });
+// Configuration
+cloudinary.config({ 
+    cloud_name: 'dtjgspe71', 
+    api_key: '479751656152939', 
+    api_secret: 'OjUmVkaHK7Fr6rf3fvFAuCo8GcA', // Click 'View Credentials' below to copy your API secret
+    secure: true,
+
+});
 //Register Api front end is Register.js
-app.post("/Register", async (req, resp) => {
-    let data = new users(req.body)
-    let result = await data.save();
-    //below 2 lines r 4 1st converting array to object then removing password
-    result = result.toObject();
-
-    delete result.password
-
-    resp.send(result)
-
-
-})
+app.post('/Register', upload.single('image'), async (req, res) => {
+    const { name, email, password } = req.body;
+  
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path);
+  
+    // Save user to MongoDB
+    const user = new users({
+      name,
+      email,
+      password,
+      imageUrl: result.secure_url
+    });
+  
+    let savedUser = await user.save();
+    savedUser = savedUser.toObject();
+    delete savedUser.password;
+  
+    res.send(savedUser);
+  });
 //Login Api front end is Login.js
 app.post("/Login", async (req, resp) => {
     if (req.body.password && req.body.email) {
@@ -100,13 +117,19 @@ app.post("/Login", async (req, resp) => {
 })
 
 //Adding post Api front end is AddPost/AddPost.js
-
+  
 app.post("/Add-Post", verfiytoken,upload.single('image') ,async (req, resp) => {
 
     try {
         const { title, body,userid,draft  } = req.body;
-        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    
+      //  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+      let imageUrl = null;
+
+      // Check if there's an uploaded image
+      if (req.file) {
+        const result = await cloudinary.uploader.upload(req.file.path); // Upload image to Cloudinary
+        imageUrl = result.secure_url; // Get the Cloudinary URL
+    }
         const newPost = new posts({
           title,
           body,

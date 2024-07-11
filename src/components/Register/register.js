@@ -7,6 +7,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false)//setting errors for wrong inputs;
+  const [image, setImage] = useState(null);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -17,31 +18,41 @@ const Register = () => {
     }
 
   })
-  const handleregister = async (event) => {
-    event.preventDefault();//preventing default refersh of form   
+  const handleRegister = async (event) => {
+    event.preventDefault();
 
-      if (!name || !email || !password ) {
-            setError(true);
-            return false
+    if (!name || !email || !password || !image) {
+      setError(true);
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('image', image);
+
+    try {
+      const res = await axios.post('http://localhost:4500/Register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-     axios.post('http://localhost:4500/Register', {
-          name, email, password
-        })
-            .then((res) => {
-      localStorage.setItem("user", JSON.stringify(res));
-                   localStorage.clear();
-                         navigate('/Login')
+      });
 
- })
-
- 
+      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.clear();
+      navigate('/Login');
+    } catch (error) {
+      console.error('Registration error', error);
+    }
   };
+
   return (
     <div className="container">
 
       <br></br>
       <h1>Register yourself</h1>
-      <form onSubmit={handleregister} >
+      <form onSubmit={handleRegister} >
         <input type="text" name="name" className="form-control m-2" placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)} required/>
@@ -62,6 +73,15 @@ const Register = () => {
             {error && !password && <span style={{color:"red"}}>Enter password</span>}
 
       <br></br>
+      <input
+          type="file"
+          name="image"
+          className="form-control m-2"
+          onChange={(e) => setImage(e.target.files[0])}
+          required
+        />
+        {error && !image && <span style={{ color: "red" }}>Upload an image</span>}
+<br></br>        
 
     <button  type="submit" class="btn btn-success">Sign up</button>
     </form></div>
