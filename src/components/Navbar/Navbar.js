@@ -8,7 +8,7 @@ const NavBar = () => {
   
   const logout = () => {
     localStorage.clear();
-    navigate("/Register");
+    navigate("/");
   };
 
   return (
@@ -34,7 +34,7 @@ const NavBar = () => {
             <li className="nav-item">
               {auth ? (
                 <div className="nav-item-content">
-                  <Link onClick={logout} to="/Register" className="logout-link">
+                  <Link onClick={logout} to="/" className="logout-link">
                     <span className="logout-button">Logout ({auth.name})</span>
                   </Link>
                   {auth.imageUrl && (

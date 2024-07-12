@@ -12,7 +12,7 @@ import YourPosts from './components/Your-Posts/Your-Posts';
 import SinglePost from './components/Singlepost/singlepost';
 import DraftPosts from './components/Draft-Posts/Draft-Posts';
 import Error from './components/Errorpage/Error';
-
+import Footer from './components/Fotter/fotter';
 
 function App() {
   return (
@@ -38,6 +38,7 @@ function App() {
           <Route path="/Login" element={<Login />}></Route>
           <Route path="/Register" element={<Register/>}></Route>
         </Routes>
+        <Footer/>
     </div>
   );
 }

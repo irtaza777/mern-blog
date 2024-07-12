@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
+import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ReactQuill from 'react-quill'; // Import ReactQuill
+import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 
 const AddPost = () => {
     const auth = localStorage.getItem('user');
@@ -10,7 +13,7 @@ const AddPost = () => {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [image, setImage] = useState(null);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleImageChange = (e) => {
@@ -19,7 +22,7 @@ const AddPost = () => {
 
     const addPost = async () => {
         if (!title || !body || !image) {
-            setError(true);
+            setError("Please fill in all required fields and upload an image.");
             return false;
         }
 
@@ -28,9 +31,7 @@ const AddPost = () => {
         formData.append('title', title);
         formData.append('body', body);
         formData.append('draft', false);
-
         formData.append('image', image);
-
 
         try {
             const token = JSON.parse(localStorage.getItem('token'));
@@ -47,13 +48,13 @@ const AddPost = () => {
             navigate("/Posts");
         } catch (error) {
             console.error('Error publishing post:', error);
-            alert("Failed to publish post. Please try again later.");
+            setError("Failed to publish post. Please try again later.");
         }
     };
 
     const addDraft = async () => {
         if (!title || !body) {
-            setError(true);
+            setError("Please fill in all required fields.");
             return false;
         }
 
@@ -76,46 +77,70 @@ const AddPost = () => {
             alert("Draft saved successfully.");
         } catch (error) {
             console.error('Error saving draft:', error);
-            alert("Failed to save draft. Please try again later.");
+            setError("Failed to save draft. Please try again later.");
         }
     };
 
     return (
-        <div>
-            <br></br>
-            <Container>
-                <h2>Write a Blog</h2>
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <div className="form-group">
-                        <input type="text" className="form-control" value={userid} onChange={(e) => setId(e.target.value)} hidden />
-                    </div>
+        <Container className="mt-4">
+            <Card className="shadow-sm">
+                <Card.Header className="bg-primary text-white">
+                    <h2 className="mb-0">Write a Blog Post</h2>
+                </Card.Header>
+                <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form onSubmit={(e) => e.preventDefault()}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter blog title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                isInvalid={!!error && !title}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Please enter a blog title.
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <br></br>
-                    <div className="form-group">
-                        <input type="text" className="form-control" placeholder="Blog Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-                        {error && !title && <span style={{ color: "red" }}>Please enter a blog title.</span>}
-                    </div>
-                    <br></br>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Body</Form.Label>
+                            <ReactQuill
+                                theme="snow"
+                                value={body}
+                                onChange={setBody}
+                                placeholder="Enter blog content"
+                                style={{ height: '200px' }} // Set height of the editor
+                            />
+                            {error && !body && <span style={{ color: "red" }}>Please enter blog content.</span>}
+                        </Form.Group>
+                        <br></br>
+                        <br></br>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                onChange={handleImageChange}
+                                isInvalid={!!error && !image}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Please choose a blog image.
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <div className="form-group">
-                        <textarea className="form-control" placeholder="Blog Body" rows="13" value={body} onChange={(e) => setBody(e.target.value)} required></textarea>
-                        {error && !body && <span style={{ color: "red" }}>Please enter blog content.</span>}
-                    </div>
-                    <br></br>
-
-                    <div className="form-group">
-                        <label>Image:</label>
-                        <input type="file" onChange={handleImageChange} required />
-                        {error && !image && <span style={{ color: "red" }}>Please choose blog image.</span>}
-
-                    </div>
-                    <br></br>
-
-                    <button type="button" className="btn btn-primary" onClick={addPost}>Publish</button>
-                    <button type="button" className="btn btn-danger m-2" onClick={addDraft}>Save Draft</button>
-                </form>
-            </Container>
-        </div>
+                        <Button variant="primary" onClick={addPost} className="me-2">
+                            Publish
+                        </Button>
+                        <Button variant="danger" onClick={addDraft}>
+                            Save Draft
+                        </Button>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </Container>
     );
 };
 

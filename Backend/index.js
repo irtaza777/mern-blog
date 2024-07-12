@@ -295,7 +295,6 @@ app.delete("/Comments/:userid/:postid/:commentid", verfiytoken, async (req, resp
 //update post on if fist get it api front end update-post
 app.get("/Update-Post/:id", verfiytoken, async (req, resp) => {
     //const currentUsrId = req.params.userid;
-    console.log("hello")
 
     //  const pid= req.params.id;
     // let post = await posts._findOne({_id:req.params.id});

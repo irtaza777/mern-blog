@@ -1,71 +1,90 @@
-import React from 'react';
-import { useState } from 'react';
-import {useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { Container, Form, Button, Card } from 'react-bootstrap';
+
 const Update = () => {
     const auth = localStorage.getItem('user');
+    const id = JSON.parse(auth)._id;
 
-    const id =JSON.parse(auth)._id
-
-    const [posts, setPosts] = useState([]);
-
+    const [posts, setPosts] = useState({});
 
     const params = useParams();
     const navigate = useNavigate();
 
-    //  const navigate = useNavigate();
     useEffect(() => {
-
-         const headers = {
-            "Content-Type": "application/json",
-    authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
-        };
-        //updating post on post id
-        const url = `http://localhost:4500/Update-Post/${params.id}`;
-
-        axios.get(url, { headers }).then((res) => setPosts(res.data))
-
-    }, [])
-
-    const updatePost = () => {
+        // Fetching post data for update
         const headers = {
             "Content-Type": "application/json",
-    authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
+            authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`
         };
-        //updating api
-        axios.put(`http://localhost:4500/Update-Post/${params.id}`,posts,{headers})
-           .then((res) => setPosts(res.data))
-        navigate("/Your-Posts");
+        const url = `http://localhost:4500/Update-Post/${params.id}`;
+
+        axios.get(url, { headers })
+            .then(res => setPosts(res.data))
+            .catch(error => console.error('Error fetching post:', error));
+    }, [params.id]);
+
+    const updatePost = (e) => {
+        e.preventDefault();
+        // Updating the post data
+        const headers = {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`
+        };
+
+        axios.put(`http://localhost:4500/Update-Post/${params.id}`, posts, { headers })
+            .then(res => {
+                console.log('Post updated:', res.data);
+                navigate("/Your-Posts");
+            })
+            .catch(error => console.error('Error updating post:', error));
     }
 
-    return (<div>
-        <br></br>
-        <h3>Edit post</h3>
-<br></br>
-<div className="container">
-        <form onSubmit={updatePost}  >
-            <input type="text" className='inputBox'
-            value={posts.userid} name="userid" 
-        hidden /><input type="text" className='inputBox'
-            value={posts._id} name="_id" 
-      hidden/>
+    return (
+        <Container className="mt-4">
+            <Card>
+                <Card.Header as="h4">Edit post</Card.Header>
+                <Card.Body>
+                    <Form onSubmit={updatePost}>
+                        <input type="text" className='inputBox' value={posts.userid} name="userid" hidden />
+                        <input type="text" className='inputBox' value={posts._id} name="_id" hidden />
 
-       <b>Blog title</b> <input type="text" className="form-control m-2"
-            value={posts.title} name="title" 
-            onChange={e => setPosts({ ...posts, title: e.target.value })}
-       required />
+                        <Form.Group controlId="formTitle">
+                            <Form.Label><b>Blog title</b></Form.Label>
+                            <Form.Control
+                                type="text"
+                                className="form-control m-2"
+                                value={posts.title || ''}
+                                name="title"
+                                onChange={e => setPosts({ ...posts, title: e.target.value })}
+                                placeholder="Enter blog title"
+                            />
+                        </Form.Group>
 
-        <b>Blog body</b><textarea type="text" className="form-control m-2" cols="5" rows="13"
-            value={posts.body} name="body" onChange={e => setPosts({ ...posts, body: e.target.value })}
-        required> </textarea>
+                        <Form.Group controlId="formBody" className="mt-3">
+                            <Form.Label><b>Blog body</b></Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                className="form-control m-2"
+                                cols="5"
+                                rows="13"
+                                value={posts.body || ''}
+                                name="body"
+                                onChange={e => setPosts({ ...posts, body: e.target.value })}
+                                placeholder="Enter blog body"
+                            />
+                        </Form.Group>
+                       
 
-                    <br></br>
-
-            <button className='btn btn-success'>Update</button></form></div>
-    </div>);
+                        <div className="mt-4 text-center">
+                            <Button variant="success" type="submit">Update</Button>
+                        </div>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </Container>
+    );
 }
 
 export default Update;
