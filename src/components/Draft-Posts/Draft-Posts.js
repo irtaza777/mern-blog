@@ -3,119 +3,106 @@ import Table from 'react-bootstrap/Table';
 import axios from 'axios';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-
+import PostContent from "../../utils/dangerousinnerhtml";
 const DraftPosts = () => {
     const auth = localStorage.getItem('user');
-    const id = JSON.parse(auth)._id
-    const [posts, setposts] = useState([]);
+    const id = JSON.parse(auth)._id; // Extract user id from localStorage
+    const [posts, setPosts] = useState([]); // State to hold fetched posts
     const [postsPerPage] = useState(6); // Number of posts per page
     const [searchTerm, setSearchTerm] = useState(''); // State for search term    
-    const [currentPage, setCurrentPage] = useState(1);//current page
+    const [currentPage, setCurrentPage] = useState(1); // Current page number
 
-
+    // Fetch posts on component mount or when user id changes
     useEffect(() => {
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
         };
         const url = `http://localhost:4500/Posts/${id}`;
 
-        axios.get(url, { headers }).then((res) => setposts(res.data.post))
+        axios.get(url, { headers })
+            .then((res) => setPosts(res.data.post)) // Set fetched posts to state
+            .catch((error) => console.error('Error fetching posts:', error));
+    }, [id]); // Dependency array ensures useEffect runs when id changes
 
-
-    }, [id])
-
-    const Deletepost = async (id) => {
-        console.warn(id)
+    // Function to delete a post
+    const deletePost = async (postId) => {
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
         };
-        axios.delete(`http://localhost:4500/Posts/${id}`, { headers })
-            .then((res) => setposts(res.data))
-            window.location.reload();
 
+        axios.delete(`http://localhost:4500/Posts/${postId}`, { headers })
+            .then((res) => setPosts(res.data)) // Update posts state after deletion
+            .catch((error) => console.error('Error deleting post:', error));
+
+        window.location.reload(); // Refresh page after deletion (consider better UX alternatives)
     }
 
+    // Pagination logic
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
-
-    //checking if posts null or not ans slicing post from start to end
     const currentPosts = posts.length > 0 ? posts.slice(indexOfFirstPost, indexOfLastPost) : [];
 
-    // function to throw on a clicked page from button
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    //function to search a post event based
-    const searchHandle = async (event) => {
+    // Function to handle search term change
+    const searchHandle = (event) => {
         setSearchTerm(event.target.value);
-
     }
-    //filtering search on title
+
+    // Filter posts based on search term
     const filteredPosts = currentPosts.filter(post =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    {/* posts are getting by login, filteredPosts stroes currentPosts stores data(posts)
-                        all managed with states*/}
-
-
-    return (<div className="container" >
-        <br></br>
-        <h4>Your all posts</h4>
-        <br></br>
-        {/* Seacrh post section*/}
-        <div className="row mb-3">
-            <div className="col-lg-4">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search posts from page..."
-                    value={searchTerm}
-
-                    onChange={searchHandle}
-
-                />
-
-            </div>        <Table responsive striped bordered hover>
+    return (
+        <div className="container">
+            <br />
+            <h4>Your Drafted Posts</h4>
+            <br />
+            {/* Search post section */}
+            <div className="row mb-3">
+                <div className="col-lg-4">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search posts..."
+                        value={searchTerm}
+                        onChange={searchHandle}
+                    />
+                </div>
+            </div>
+            {/* Table of drafted posts */}
+            <Table responsive striped bordered hover>
                 <thead>
                     <tr>
-
                         <th>Title</th>
                         <th>Body</th>
                         <th>Operations</th>
-
-
-
                     </tr>
                 </thead>
-
-
                 <tbody>
-
-
                     {
-                        filteredPosts.length > 0 ? filteredPosts.map((item, index) =>
-                            <tr key={item._id}>
-
-
-                                <td>{item.title}</td>
-
-                                <td>{item.body}</td>
-
-                                <td> <button class="btn btn-danger" onClick={() => Deletepost(item._id)}>                                    <FontAwesomeIcon icon={faTrashAlt} />
-                                </button>
-                                </td>
-
-
+                        filteredPosts.length > 0 ?
+                            filteredPosts.map((item, index) => (
+                                <tr key={item._id}>
+                                    <td>{item.title}</td>
+                                    <td>                                
+                                        <PostContent content={item.body} />
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-danger" onClick={() => deletePost(item._id)}>
+                                            <FontAwesomeIcon icon={faTrashAlt} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            )) :
+                            <tr>
+                                <td colSpan="3"><h3>No Drafted posts</h3></td>
                             </tr>
-
-                        ) : <h3>No Drafted posts</h3>
-                    }</tbody>
+                    }
+                </tbody>
             </Table>
+            {/* Pagination */}
             <div className="row justify-content-center">
                 <div className="col-lg-12">
                     <nav>
@@ -123,7 +110,7 @@ const DraftPosts = () => {
                             {Array.from({ length: Math.ceil(posts.length / postsPerPage) }, (_, index) => (
                                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
                                     <button
-                                        onClick={() => paginate(index + 1)}
+                                        onClick={() => setCurrentPage(index + 1)}
                                         className="page-link"
                                     >
                                         {index + 1}
@@ -133,8 +120,9 @@ const DraftPosts = () => {
                         </ul>
                     </nav>
                 </div>
-            </div >
-        </div ></div >)
+            </div>
+        </div>
+    );
 }
 
 export default DraftPosts;

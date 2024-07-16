@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
+  // State hooks for form fields and error handling
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,6 +14,7 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  // Redirect to login if user is already authenticated
   useEffect(() => {
     const auth = localStorage.getItem('user');
     if (auth) {
@@ -20,14 +22,17 @@ const Register = () => {
     }
   }, [navigate]);
 
+  // Handle form submission
   const handleRegister = async (event) => {
     event.preventDefault();
 
+    // Validate form fields
     if (!name || !email || !password || !image) {
       setError(true);
       return;
     }
 
+    // Create a FormData object to send form data including the image
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
@@ -35,12 +40,15 @@ const Register = () => {
     formData.append('image', image);
 
     try {
+      // Send form data to the server
       const res = await axios.post('http://localhost:4500/Register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+       
       });
 
+      // Store user data in local storage and navigate to login
       localStorage.setItem("user", JSON.stringify(res.data));
       navigate('/Login');
     } catch (error) {
@@ -55,6 +63,7 @@ const Register = () => {
           <div className="card shadow-lg p-4 rounded">
             <h2 className="text-center mb-4">Register</h2>
             <form onSubmit={handleRegister}>
+              {/* Name input field */}
               <div className="form-group mb-3">
                 <label htmlFor="name" className="form-label">
                   <FontAwesomeIcon icon={faUser} /> Name
@@ -72,6 +81,7 @@ const Register = () => {
                 {error && !name && <div className="text-danger">Please enter your name</div>}
               </div>
 
+              {/* Email input field */}
               <div className="form-group mb-3">
                 <label htmlFor="email" className="form-label">
                   <FontAwesomeIcon icon={faEnvelope} /> Email
@@ -89,6 +99,7 @@ const Register = () => {
                 {error && !email && <div className="text-danger">Please enter your email</div>}
               </div>
 
+              {/* Password input field */}
               <div className="form-group mb-3">
                 <label htmlFor="password" className="form-label">
                   <FontAwesomeIcon icon={faLock} /> Password
@@ -106,6 +117,7 @@ const Register = () => {
                 {error && !password && <div className="text-danger">Please enter your password</div>}
               </div>
 
+              {/* Image upload field */}
               <div className="form-group mb-4">
                 <label htmlFor="image" className="form-label">
                   <FontAwesomeIcon icon={faUpload} /> Profile Picture
@@ -121,6 +133,7 @@ const Register = () => {
                 {error && !image && <div className="text-danger">Please upload an image</div>}
               </div>
 
+              {/* Submit button */}
               <button type="submit" className="btn btn-primary w-100">Sign Up</button>
             </form>
           </div>

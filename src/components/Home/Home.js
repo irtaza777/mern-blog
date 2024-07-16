@@ -31,7 +31,7 @@ const Home = () => {
           </Col>
           <Col md={6}>
             <img 
-     src={ require('../../assests/US.png') }
+     src='https://res.cloudinary.com/dtjgspe71/image/upload/v1720786259/uarxrxcs43svmupbstzl.png'
       alt="About Us" 
               className="img-fluid"
               style={{ borderRadius: '8px' }}

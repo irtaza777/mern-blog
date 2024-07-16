@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import Table from 'react-bootstrap/Table';
@@ -69,12 +69,17 @@ const YourPosts = () => {
         window.location.reload();
 
     }
+    //to render on currentUserPosts
+    useEffect(()=>{
+    },[currentUserPosts])
+    
     //usequery
-
-    const { data, isLoading, error } = useQuery('fetchData', fetchYourpost, {
+   
+    const { data, isLoading, error, } = useQuery('fetchData', fetchYourpost, {
         //staleTime: 60000, // for this time data is considered fresh no reload
         //cacheTime: 300000, // 5 minutes data is in cahche
-
+        refetchOnWindowFocus: false, // Disable refetch on window focus
+        refetchOnReconnect: false, // Disable refetch on reconnect
     })
     //console.log(data)
     if (isLoading) {
@@ -165,15 +170,15 @@ const YourPosts = () => {
                         <tr>
                             <td>{item.title}</td>
                             <td>
-                    <PostContent content={item.body} />
-                      </td>
+                                <PostContent content={item.body} />
+                            </td>
                             <td><img
-                      variant="top"
-                      src={item.imageUrl}
-                      alt="data"
-                      className="rounded-top"
-                      style={{ maxHeight: '200px',width:'200px', borderRadius: '10px' }}
-                    /></td>
+                                variant="top"
+                                src={item.imageUrl}
+                                alt="data"
+                                className="rounded-top"
+                                style={{ maxHeight: '200px', width: '200px', borderRadius: '10px' }}
+                            /></td>
                             <td>
                                 <Link to={`/Update-Post/${item._id}`}>
                                     <button className="btn btn-success m-2">

@@ -6,38 +6,42 @@ const users = require('./db/users/users')
 const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
 const likes = require('./db/likes/likes')
-
+// redis client for cache db
 const redisclient = require('./redisclient')
+// JWT token
+const jwt = require("jsonwebtoken")
+// JWT token key
+const jwtkey = "blog "
 
-const jwt = require("jsonwebtoken")// JWT token
-const jwtkey = "blog "// JWT token key
 //using twilio to generate an orginal sms to your phone number
 const accountSid = 'AC56def539c19b1b77dd5af1c59c970b08';
 const authToken = 'a99c70c5a4406376320e63745a21eaf9';
 const client = require('twilio')(accountSid, authToken);
+
+//cronjob to send email
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
+
+//cloudniary to upload image
 const cloudinary = require('cloudinary').v2;
 
-//for image
-const path = require('path');
-//upload middleware for image
+//upload middleware for image upoad
+//req z image to be upload name is req and send it to desried url
 const upload = require('./middleware/upload');
 
-
-const cors = require("cors");// To avoid cors error which is by default blocking feature of browser
-//from front end to back end
+// To avoid cors error which is by default blocking feature of browser from front end to back end
+const cors = require("cors");
 
 
 const app = express();
 
 app.use(cors());
 
+//to accept json req
 app.use(express.json())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-
+//cronjob
 function logMessage() {
     console.log('Cron job executed at:', new Date().toLocaleString());
 }
@@ -55,6 +59,7 @@ const mailOptions = {
     subject: 'Meeting Reminder',
     html: '<p>hi! Your salary arrived</p>'// plain text body
 };
+
 // Schedule the cron job to run every minute
 cron.schedule('* * * * *', () => {
     transporter.sendMail(mailOptions, function (err, info) {
@@ -64,10 +69,12 @@ cron.schedule('* * * * *', () => {
             console.log(info);
     });
 });
-// Configuration
-cloudinary.config({ 
-    cloud_name: 'dtjgspe71', 
-    api_key: '479751656152939', 
+//cronjob end
+
+// cludniary Configuration
+cloudinary.config({
+    cloud_name: 'dtjgspe71',
+    api_key: '479751656152939',
     api_secret: 'OjUmVkaHK7Fr6rf3fvFAuCo8GcA', // Click 'View Credentials' below to copy your API secret
     secure: true,
 
@@ -75,24 +82,24 @@ cloudinary.config({
 //Register Api front end is Register.js
 app.post('/Register', upload.single('image'), async (req, res) => {
     const { name, email, password } = req.body;
-  
+
     // Upload image to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
-  
+
     // Save user to MongoDB
     const user = new users({
-      name,
-      email,
-      password,
-      imageUrl: result.secure_url
+        name,
+        email,
+        password,
+        imageUrl: result.secure_url
     });
-  
+
     let savedUser = await user.save();
     savedUser = savedUser.toObject();
     delete savedUser.password;
-  
+
     res.send(savedUser);
-  });
+});
 //Login Api front end is Login.js
 app.post("/Login", async (req, resp) => {
     if (req.body.password && req.body.email) {
@@ -117,34 +124,34 @@ app.post("/Login", async (req, resp) => {
 })
 
 //Adding post Api front end is AddPost/AddPost.js
-  
-app.post("/Add-Post", verfiytoken,upload.single('image') ,async (req, resp) => {
+
+app.post("/Add-Post", verfiytoken, upload.single('image'), async (req, resp) => {
 
     try {
-        const { title, body,userid,draft  } = req.body;
-      //  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-      let imageUrl = null;
+        const { title, body, userid, draft } = req.body;
+        //  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+        let imageUrl = null;
 
-      // Check if there's an uploaded image
-      if (req.file) {
-        const result = await cloudinary.uploader.upload(req.file.path); // Upload image to Cloudinary
-        imageUrl = result.secure_url; // Get the Cloudinary URL
-    }
+        // Check if there's an uploaded image
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path); // Upload image to Cloudinary
+            imageUrl = result.secure_url; // Get the Cloudinary URL
+        }
         const newPost = new posts({
-          title,
-          body,
-          userid,
-          imageUrl,
-          draft
-          
+            title,
+            body,
+            userid,
+            imageUrl,
+            draft
+
         });
-       
-    
+
+
         await newPost.save();
         resp.status(201).json(newPost);
-      } catch (err) {
+    } catch (err) {
         resp.status(500).json({ error: err.message });
-      }
+    }
     //using twilio to generate an orginal sms to your phone number
     // client.messages
     //   .create({
@@ -160,26 +167,26 @@ app.post("/Add-Post", verfiytoken,upload.single('image') ,async (req, resp) => {
 
 //Applying Redis in this api
 app.get("/Posts", verfiytoken, async (req, resp) => {
-        // Checking if data is in Redis cache db or not, if yes get it
+    // Checking if data is in Redis cache db or not, if yes get it
 
-        let cachedPosts = await redisclient.get("posts");
-       if (cachedPosts) {
-            return resp.json(JSON.parse(cachedPosts));
-        }
+    let cachedPosts = await redisclient.get("posts");
+    if (cachedPosts) {
+        return resp.json(JSON.parse(cachedPosts));
+    }
 
-        // Fetching posts from the database
-        let post = await posts.find({ draft: false });
+    // Fetching posts from the database
+    let post = await posts.find({ draft: false });
 
-        // Entering data in Redis
-        await redisclient.set('posts', JSON.stringify(post), 'EX', 30);
+    // Entering data in Redis
+    await redisclient.set('posts', JSON.stringify(post), 'EX', 30);
 
-        if (post.length > 0) {
-           return resp.json( post ); // Send a response with the fetched posts
-        } else {
-            return resp.json([]); // Send an empty array if no posts found
-        }
-    }) 
-;
+    if (post.length > 0) {
+        return resp.json(post); // Send a response with the fetched posts
+    } else {
+        return resp.json([]); // Send an empty array if no posts found
+    }
+})
+    ;
 //drafted post with id frontend draftpost
 app.get("/Posts/:id", verfiytoken, async (req, resp) => {
     const currentUsrId = req.params.id;
@@ -309,13 +316,24 @@ app.get("/Update-Post/:id", verfiytoken, async (req, resp) => {
 })
 //update post on if 2nd update get it api front end update-post
 
-app.put("/Update-Post/:id", verfiytoken, async (req, resp) => {
+app.put("/Update-Post/:id", verfiytoken, upload.single('image'), async (req, res) => {
+    // If a new image is uploaded, include it in the update
+    const update = req.body;
+
+    if (req.file) {
+        const imageUrl = await cloudinary.uploader.upload(req.file.path);
+        update.imageUrl = imageUrl.secure_url;
+        console.log(`New image uploaded: ${imageUrl}`);
+    }
+
+
     let result = await posts.updateOne(
         { _id: req.params.id },
-        { $set: req.body }
+        { $set: update }
     )
-    resp.send(result)
+    res.send(result)
 });
+
 //drafted post deleted
 app.delete("/Posts/:draftpostid", verfiytoken, async (req, resp) => {
     let result = await posts.deleteOne({ _id: req.params.draftpostid });

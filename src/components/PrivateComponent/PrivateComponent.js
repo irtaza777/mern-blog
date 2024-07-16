@@ -5,7 +5,7 @@ const PrivateComponent = () => {
 
     const auth = localStorage.getItem('user');
 
-    return auth ? <Outlet /> : <Navigate to="/Home" />
+    return auth ? <Outlet /> : <Navigate to="/" />
 }
 
 export default PrivateComponent

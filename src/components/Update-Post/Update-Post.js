@@ -8,12 +8,12 @@ const Update = () => {
     const id = JSON.parse(auth)._id;
 
     const [posts, setPosts] = useState({});
+    const [image, setImage] = useState(null);
 
     const params = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetching post data for update
         const headers = {
             "Content-Type": "application/json",
             authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`
@@ -27,19 +27,34 @@ const Update = () => {
 
     const updatePost = (e) => {
         e.preventDefault();
-        // Updating the post data
+
         const headers = {
-            "Content-Type": "application/json",
             authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`
         };
 
-        axios.put(`http://localhost:4500/Update-Post/${params.id}`, posts, { headers })
+        const formData = new FormData();
+        formData.append('title', posts.title);
+        formData.append('body', posts.body);
+        if (image) {
+            formData.append('image', image);
+        }
+
+        axios.put(`http://localhost:4500/Update-Post/${params.id}`, formData, { headers })
             .then(res => {
                 console.log('Post updated:', res.data);
                 navigate("/Your-Posts");
             })
             .catch(error => console.error('Error updating post:', error));
-    }
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setPosts({ ...posts, [name]: value });
+    };
 
     return (
         <Container className="mt-4">
@@ -57,7 +72,7 @@ const Update = () => {
                                 className="form-control m-2"
                                 value={posts.title || ''}
                                 name="title"
-                                onChange={e => setPosts({ ...posts, title: e.target.value })}
+                                onChange={handleInputChange}
                                 placeholder="Enter blog title"
                             />
                         </Form.Group>
@@ -71,11 +86,25 @@ const Update = () => {
                                 rows="13"
                                 value={posts.body || ''}
                                 name="body"
-                                onChange={e => setPosts({ ...posts, body: e.target.value })}
+                                onChange={handleInputChange}
                                 placeholder="Enter blog body"
                             />
                         </Form.Group>
-                       
+
+                        <img
+                            src={posts.imageUrl}
+                            alt="data"
+                            className="rounded-top"
+                            style={{ maxHeight: '200px', width: '200px', borderRadius: '10px' }}
+                        />
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                onChange={handleImageChange}
+                            />
+                        </Form.Group>
 
                         <div className="mt-4 text-center">
                             <Button variant="success" type="submit">Update</Button>

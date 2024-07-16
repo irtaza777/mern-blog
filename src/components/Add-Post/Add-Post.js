@@ -1,31 +1,40 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ReactQuill from 'react-quill'; // Import ReactQuill
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import axios from 'axios'; // Import axios for HTTP requests
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { Container, Form, Button, Alert, Card } from 'react-bootstrap'; // Import Bootstrap components
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import ReactQuill from 'react-quill'; // Import ReactQuill for rich text editor
+import 'react-quill/dist/quill.snow.css'; // Import Quill CSS
 
 const AddPost = () => {
+    // Retrieve user ID from local storage and set it in state
     const auth = localStorage.getItem('user');
     const uid = JSON.parse(auth)._id;
     const [userid, setId] = useState(uid);
+    
+    // Define state variables for form inputs and error handling
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [image, setImage] = useState(null);
     const [error, setError] = useState('');
+    
+    // Use useNavigate hook for navigation
     const navigate = useNavigate();
 
+    // Handle image file selection
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
     };
 
+    // Function to add a new post
     const addPost = async () => {
+        // Validate required fields
         if (!title || !body || !image) {
             setError("Please fill in all required fields and upload an image.");
             return false;
         }
 
+        // Prepare form data
         const formData = new FormData();
         formData.append('userid', userid);
         formData.append('title', title);
@@ -34,6 +43,7 @@ const AddPost = () => {
         formData.append('image', image);
 
         try {
+            // Prepare headers with authorization token
             const token = JSON.parse(localStorage.getItem('token'));
             const headers = {
                 headers: {
@@ -41,23 +51,27 @@ const AddPost = () => {
                     'Authorization': `Bearer ${token}`
                 }
             };
+            // Send POST request to add the post
             const url = "http://localhost:4500/Add-Post";
             const res = await axios.post(url, formData, headers);
             console.log(res.data);
             alert("Congratulations! Your post has been published.");
-            navigate("/Posts");
+            navigate("/Posts"); // Navigate to the posts page
         } catch (error) {
             console.error('Error publishing post:', error);
             setError("Failed to publish post. Please try again later.");
         }
     };
 
+    // Function to save a draft post
     const addDraft = async () => {
+        // Validate required fields
         if (!title || !body) {
             setError("Please fill in all required fields.");
             return false;
         }
 
+        // Prepare data for draft
         const data = {
             userid,
             title,
@@ -66,11 +80,13 @@ const AddPost = () => {
         };
 
         try {
+            // Prepare headers with authorization token
             const token = JSON.parse(localStorage.getItem('token'));
             const headers = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             };
+            // Send POST request to save the draft
             const url = "http://localhost:4500/Add-Post";
             const res = await axios.post(url, data, { headers });
             console.log(res.data);
@@ -116,8 +132,7 @@ const AddPost = () => {
                             />
                             {error && !body && <span style={{ color: "red" }}>Please enter blog content.</span>}
                         </Form.Group>
-                        <br></br>
-                        <br></br>
+                        
                         <Form.Group className="mb-3">
                             <Form.Label>Image</Form.Label>
                             <Form.Control
@@ -144,4 +159,4 @@ const AddPost = () => {
     );
 };
 
-export default AddPost;
+export default AddPost; // Export the AddPost component

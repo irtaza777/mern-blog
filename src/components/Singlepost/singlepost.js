@@ -1,23 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import PostContent from '../../utils/dangerousinnerhtml';
+import React, { useState, useEffect } from 'react'; // Import React and hooks
+import { useParams } from 'react-router-dom'; // Import useParams hook for accessing route parameters
+import axios from 'axios'; // Import axios for HTTP requests
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import FontAwesomeIcon for icons
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'; // Import trash icon
+import PostContent from '../../utils/dangerousinnerhtml'; // Import PostContent utility function
+
 const SinglePost = () => {
+    // Retrieve user ID from local storage and set it in state
     const auth = localStorage.getItem('user');
     const uid = JSON.parse(auth)._id;
     const [userid, setId] = useState(uid);
+    
+    // Define state variables for post, comments, and form inputs
     const [post, setPost] = useState({});
     const [comment, setComment] = useState('');
     const [comments, setComments] = useState([]);
     const [error, setError] = useState(false);
     const [isCommentUpdated, setIsCommentUpdated] = useState(false);
-
+    
+    // Access the post ID from the URL parameters
     const params = useParams();
 
-    // Add a comment
+    // Function to add a comment
     const addComment = async () => {
+        // Check if the comment is empty
         if (!comment.trim()) {
             setError(true);
             return;
@@ -32,30 +38,32 @@ const SinglePost = () => {
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
         };
         try {
+            // Send POST request to add a comment
             await axios.post("http://localhost:4500/singlepost/Add-Comment", data, { headers });
-            setIsCommentUpdated(!isCommentUpdated);
-            setComment('');
-            setError(false);
+            setIsCommentUpdated(!isCommentUpdated); // Toggle comment update state
+            setComment(''); // Clear the comment input
+            setError(false); // Clear the error state
         } catch (err) {
             console.error(err);
         }
     };
 
-    // Delete a comment
+    // Function to delete a comment
     const deleteComment = async (id) => {
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
         };
         try {
+            // Send DELETE request to delete a comment
             await axios.delete(`http://localhost:4500/Comments/${userid}/${params.id}/${id}`, { headers });
-            setIsCommentUpdated(!isCommentUpdated);
+            setIsCommentUpdated(!isCommentUpdated); // Toggle comment update state
         } catch (err) {
             console.error(err);
         }
     };
 
-    // Fetch single post details
+    // Fetch single post details on component mount and when params.id changes
     useEffect(() => {
         const headers = {
             "Content-Type": "application/json",
@@ -66,7 +74,7 @@ const SinglePost = () => {
             .catch(err => console.error(err));
     }, [params.id]);
 
-    // Fetch comments
+    // Fetch comments on component mount and when isCommentUpdated changes
     useEffect(() => {
         const headers = {
             "Content-Type": "application/json",
@@ -84,8 +92,6 @@ const SinglePost = () => {
                     <h1 className="display-4 mb-4">{post.title}</h1>
                     <p className="lead"><PostContent content={post.body}/></p>
                     Posted on:<b style={{marginLeft:'2px',fontStyle:'italic'}}>{post.createdAt}</b>
-
-                    
                 </div>
             </div>
 
@@ -133,4 +139,4 @@ const SinglePost = () => {
     );
 };
 
-export default SinglePost;
+export default SinglePost; // Export the SinglePost component
