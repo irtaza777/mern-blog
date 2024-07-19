@@ -1,0 +1,34 @@
+.hero-section {
+    background: url('https://res.cloudinary.com/dtjgspe71/image/upload/v1720786259/vtdk0b4tvw9dg98ehelj.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 100px 0;
+    color: white;
+    height: 400px;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    color: rgb(202, 95, 158);
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .feature-card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .testimonial-card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    border-top: 1px solid #e9ecef;
+  }
+  

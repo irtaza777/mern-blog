@@ -1,162 +1,142 @@
-import React from 'react';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // Import React and hooks
+import { useParams } from 'react-router-dom'; // Import useParams hook for accessing route parameters
+import axios from 'axios'; // Import axios for HTTP requests
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import FontAwesomeIcon for icons
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'; // Import trash icon
+import PostContent from '../../utils/dangerousinnerhtml'; // Import PostContent utility function
+
 const SinglePost = () => {
+    // Retrieve user ID from local storage and set it in state
     const auth = localStorage.getItem('user');
-
-    const uid = JSON.parse(auth)._id
+    const uid = JSON.parse(auth)._id;
     const [userid, setId] = useState(uid);
-    const [posts, setPosts] = useState([]);
-    const [pid, setPid] = useState('posts._id');
-    const [error, setError] = useState(false);//errors
-
-    const [comment, setComment] = useState('');// for add comment
-    const [comments, setComments] = useState([]);// for fetch comments
-
-    const [isCmmentUpdated, setisCmmentUpdated] = useState(false);
-
+    
+    // Define state variables for post, comments, and form inputs
+    const [post, setPost] = useState({});
+    const [comment, setComment] = useState('');
+    const [comments, setComments] = useState([]);
+    const [error, setError] = useState(false);
+    const [isCommentUpdated, setIsCommentUpdated] = useState(false);
+    
+    // Access the post ID from the URL parameters
     const params = useParams();
 
-    //Adding comment to a singlepost
-    const addcomment = async (pid) => {
-        if (!comment) {
+    // Function to add a comment
+    const addComment = async () => {
+        // Check if the comment is empty
+        if (!comment.trim()) {
             setError(true);
-            return false
+            return;
         }
         const data = {
             user: userid,
             comment: comment,
             postId: params.id
+        };
+        const headers = {
+            "Content-Type": "application/json",
+            authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
+        };
+        try {
+            // Send POST request to add a comment
+            await axios.post("http://localhost:4500/singlepost/Add-Comment", data, { headers });
+            setIsCommentUpdated(!isCommentUpdated); // Toggle comment update state
+            setComment(''); // Clear the comment input
+            setError(false); // Clear the error state
+        } catch (err) {
+            console.error(err);
         }
+    };
 
+    // Function to delete a comment
+    const deleteComment = async (id) => {
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
         };
-        const url = "http://localhost:4500/singlepost/Add-Comment"
-        axios.post(url, data, { headers })
-            .then((res) => {
-                setisCmmentUpdated(!isCmmentUpdated)
-                console.log(res)
-                    ;
-            })
+        try {
+            // Send DELETE request to delete a comment
+            await axios.delete(`http://localhost:4500/Comments/${userid}/${params.id}/${id}`, { headers });
+            setIsCommentUpdated(!isCommentUpdated); // Toggle comment update state
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
-    }
-    //deleting a comment of that user of that post of that comment id(fucntion)
-    const Deletecomment = (id) => {
-        const postid = params.id
-
-        console.log(postid)
-
-        const headers = {
-            "Content-Type": "application/json",
-            authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
-        };
-        //deleting comment api on userid/postid/commentid
-
-        axios.delete(`http://localhost:4500/Comments/${userid}/${postid}/${id}`, { headers })
-            .then((res) => setComments(res.data))
-            window.location.reload();
-
-    }
-
+    // Fetch single post details on component mount and when params.id changes
     useEffect(() => {
-        
-        //api to retrive singlepost by its id
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
         };
+        axios.get(`http://localhost:4500/singlepost/${params.id}`, { headers })
+            .then(res => setPost(res.data))
+            .catch(err => console.error(err));
+    }, [params.id]);
 
-        //fetching post of that id only
-        const url_singlepost_id = `http://localhost:4500/singlepost/${params.id}`;
-
-        axios.get(url_singlepost_id, { headers }).then((res) => setPosts(res.data))
-        //api end
-
-
-    }, [params.id])
-
+    // Fetch comments on component mount and when isCommentUpdated changes
     useEffect(() => {
-
-        //api to retrive singlepost by its id
         const headers = {
             "Content-Type": "application/json",
             authorization: `bearer ${JSON.parse(localStorage.getItem('token'))}`
-
         };
+        axios.get(`http://localhost:4500/singlepost/Comments/${params.id}`, { headers })
+            .then(res => setComments(res.data))
+            .catch(err => console.error(err));
+    }, [isCommentUpdated]);
 
+    return (
+        <div className="container my-5">
+            <div className="row mb-4">
+                <div className="col-lg-8">
+                    <h1 className="display-4 mb-4">{post.title}</h1>
+                    <p className="lead"><PostContent content={post.body}/></p>
+                    Posted on:<b style={{marginLeft:'2px',fontStyle:'italic'}}>{post.createdAt}</b>
+                </div>
+            </div>
 
+            <div className="row mb-4" style={{ backgroundColor: '#f8f9fa', paddingTop: '20px', borderRadius: '10px' }}>
+                <div className="col-lg-8">
+                    <h4>Add a Comment</h4>
+                    <textarea
+                        className="form-control mb-3"
+                        rows="1"
+                        placeholder="Write your comment here..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                    />
+                    {error && !comment.trim() && <div className="text-danger mb-2">Please enter a comment.</div>}
+                    <button
+                        onClick={addComment}
+                        className="btn btn-primary"
+                    >
+                        Add Comment
+                    </button>
+                </div>
+            </div>
 
-        const id = params.id// taking singlepost id to send in comments fetching api
-
-        //Api for comment retrivel of that singlepost by singlepost id
-
-        const urlc = `http://localhost:4500/singlepost/Comments/${id}`;
-
-        axios.get(urlc, { headers }).then((res) => setComments(res.data))
-
-        //console.log("::", comments)
-    }, [isCmmentUpdated])
-
-
-
-
-    return (<div className="container">
-        <br></br>
-        <div class="row">
-            <div class="col-10">
-
-
-
-
-                <h5 class="mb-1">{posts.title}</h5>
-
-                <p class="mb-1">{posts.body}</p>
+            <div className="row">
+                <div className="col-lg-8">
+                    <h4>Comments</h4>
+                    {comments.length > 0 ? (
+                        comments.map((item) => (
+                            <div key={item._id} className="d-flex justify-content-between align-items-center mb-3" style={{ backgroundColor: '#e9ecef', padding: '10px', borderRadius: '8px' }}>
+                                <p className="mb-0">{item.comment}</p>
+                                <button
+                                    onClick={() => deleteComment(item._id)}
+                                    className="btn btn-danger btn-sm"
+                                >
+                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No comments yet.</p>
+                    )}
+                </div>
             </div>
         </div>
-        <br></br>
-        <div className="row " style={{ backgroundColor: 'lightgrey', padding: '20px' }}>
-            <h2>Comments</h2>
-            <div className="col-6">
-                <input type="text" className="form-control"
-                    value={pid} onChange={(e) => { setPid(e.target.value) }} hidden />
-                <textarea className="form-control" placeholder="Comments" rows="1" cols="2"
-                    value={comment} onChange={(e) => { setComment(e.target.value) }} required></textarea>
-                {error && !comment && <span style={{ color: "red" }}>giva a comment</span>}
+    );
+};
 
-            </div>
-            <div className="col-2">
-
-                <button onClick={() => addcomment(posts._id)} type="submit" className="btn btn-primary">Comment</button>
-            </div>
-
-        </div>
-        <div className="row " style={{ backgroundColor: 'lightgrey'}}>
-
-        {
-            comments.length > 0 ? comments.map((item, index) =>
-                <tr>
-                            <div className="col-6" style={{marginLeft:'20px'}}>
-
-                    <td>{item.comment} <button class="btn btn-danger "style={{position:'relative', marginleft:'2px'}} onClick={() => Deletecomment(item._id)}>Delete</button>
-</td>
-
-                    </div>
-                    <br></br>
-
-
-
-
-                </tr>) : <h3>No Comments yet</h3>}
-                </div >
-    </div >);
-
-}
-
-export default SinglePost;
+export default SinglePost; // Export the SinglePost component
