@@ -83,15 +83,24 @@ const SinglePost = () => {
         axios.get(`http://localhost:4500/singlepost/Comments/${params.id}`, { headers })
             .then(res => setComments(res.data))
             .catch(err => console.error(err));
-    }, [isCommentUpdated]);
+    }, [isCommentUpdated,params.id]);
 
     return (
         <div className="container my-5">
             <div className="row mb-4">
                 <div className="col-lg-8">
                     <h1 className="display-4 mb-4">{post.title}</h1>
+                    <img
+                    src={post.imageUrl}
+                    alt="singlePost image"
+                    className="rounded-top"
+                    style={{ width: '1100px',maxHeight:'400px' }}
+                  />
+                  <br></br>
                     <p className="lead"><PostContent content={post.body}/></p>
                     Posted on:<b style={{marginLeft:'2px',fontStyle:'italic'}}>{post.createdAt}</b>
+                    <br></br>
+                    Likes:<b style={{marginLeft:'2px',fontStyle:'normal'}}>{post.likeCount}</b>
                 </div>
             </div>
 

@@ -4,20 +4,30 @@ import { Link } from 'react-router-dom';
 import '../../Css/Home/home.css'; // Assuming you have custom CSS for additional styling
 
 const Home = () => {
+
   return (
     <>
-      {/* Hero Section */}
-      <div className="hero-section text-center">
-        
+      {/* bg image Section banner */}
+      <div>
+        <img
+          className="img-responsive"
+          src={'https://res.cloudinary.com/dtjgspe71/image/upload/v1720786259/vtdk0b4tvw9dg98ehelj.jpg'}
+          alt="Description"
+          style={{
+            width: '100%', // Make the image responsive
+            height: '400px' // Maintain the aspect ratio
+          }}
+        />
       </div>
+
       <br></br>
       <Container>
-          <h className="hero-title" >Welcome to Blog Panel</h>
-          <p className="hero-subtitle">Write a blog, Let yourself get login by clicking on here... </p>
-          <Link to="/Login">    <Button variant="primary" size="lg" className="mt-4">Get Started</Button></Link>
-        </Container>
+        <h className="hero-title" >Welcome to Blog Panel</h>
+        <p className="hero-subtitle">Write a blog, Let yourself get login by clicking on here... </p>
+        <Link to="/Login">    <Button variant="primary" size="lg" className="mt-4">Get Started</Button></Link>
+      </Container>
 
-          {/* About Us Section */}
+      {/* About Us Section */}
       <Container className="mt-5">
         <Row>
           <Col md={6}>
@@ -30,9 +40,9 @@ const Home = () => {
             </p>
           </Col>
           <Col md={6}>
-            <img 
-     src='https://res.cloudinary.com/dtjgspe71/image/upload/v1720786259/uarxrxcs43svmupbstzl.png'
-      alt="About Us" 
+            <img
+              src='https://res.cloudinary.com/dtjgspe71/image/upload/v1720786259/uarxrxcs43svmupbstzl.png'
+              alt="About Us"
               className="img-fluid"
               style={{ borderRadius: '8px' }}
             />
@@ -103,7 +113,7 @@ const Home = () => {
         </Row>
       </Container>
 
-      
+
     </>
   );
 }
