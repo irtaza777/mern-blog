@@ -52,7 +52,7 @@ const Posts = () => {
   };
 
   // Filter posts based on search term
-  const filteredPosts = currentPosts.filter(post =>
+  const filteredPosts =  currentPosts.filter(post =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -129,7 +129,7 @@ const Posts = () => {
                 </Card.Footer>
               </Card>
             </Col>
-          )) : <h1>No posts yet</h1>}
+          )) : <h3>Ooops! </h3>}
         </div>
         {/* pagination */}
 
