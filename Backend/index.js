@@ -42,7 +42,10 @@ app.use(cors());
 
 //to accept json req
 app.use(express.json())
-
+app.use((req, res, next) => {
+    logger.info(`Request received: ${req.method} ${req.url}`);
+    next();
+  });
 
 //cronjob
 function logMessage() {
