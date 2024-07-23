@@ -15,7 +15,7 @@ const Home = () => {
           alt="Description"
           style={{
             width: '100%', // Make the image responsive
-            height: '400px' // Maintain the aspect ratio
+            height: 'auto' // Maintain the aspect ratio
           }}
         />
       </div>
