@@ -6,6 +6,9 @@ const users = require('./db/users/users')
 const posts = require('./db/posts/posts')
 const comments = require('./db/comments/comments')
 const likes = require('./db/likes/likes')
+//Logs
+const logger = require('./logs/logger');
+
 // redis client for cache db
 const redisclient = require('./redisclient')
 // JWT token
@@ -112,6 +115,8 @@ app.post("/Login", async (req, resp) => {
                 }
                 resp.send({ user, auth: token })//auth with token
             })
+            logger.info('someone loggedIn');
+
         }
         else {
 
