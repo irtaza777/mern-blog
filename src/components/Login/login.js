@@ -2,6 +2,7 @@ import React, { useState } from "react"; // Import React and useState hook
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'; // Import Bootstrap components
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import logger from '../../utils/logger';//logs
 
 const Login = () => {
     const [email, setEmail] = useState(''); // State for email input
@@ -29,6 +30,8 @@ const Login = () => {
                 // If authentication is successful, store user info and token in local storage
                 localStorage.setItem("user", JSON.stringify(result.user));
                 localStorage.setItem("token", JSON.stringify(result.auth));
+                logger.info('LoggedIn');
+
                 navigate('/Posts'); // Navigate to the Posts page
             } else {
                 setError("Invalid email or password"); // Set error message if authentication fails
