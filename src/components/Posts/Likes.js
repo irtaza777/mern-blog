@@ -35,6 +35,7 @@ const Likes = ({ post }) => {
 
         setLikeCount(res.data.likeCount);
         setLiked(res.data.liked);
+        console.log("ok")
         
     };
 
