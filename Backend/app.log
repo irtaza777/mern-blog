@@ -3,3 +3,42 @@
 {"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:11:24.677Z"}
 {"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:17:02.287Z"}
 {"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:17:19.531Z"}
+{"level":"info","message":"Request received: POST /Login","timestamp":"2024-07-23T10:22:24.129Z"}
+{"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:22:24.151Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:22:24.267Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:22:24.373Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:22:24.383Z"}
+{"level":"info","message":"Request received: POST /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/toggle","timestamp":"2024-07-23T10:23:18.783Z"}
+{"level":"info","message":"Request received: POST /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/toggle","timestamp":"2024-07-23T10:23:50.773Z"}
+{"level":"info","message":"Request received: POST /Login","timestamp":"2024-07-23T10:32:10.149Z"}
+{"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:32:10.180Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:32:10.244Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:32:10.304Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:32:10.313Z"}
+{"level":"info","message":"Request received: POST /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/toggle","timestamp":"2024-07-23T10:35:27.144Z"}
+{"level":"info","message":"Request received: POST /Login","timestamp":"2024-07-23T10:36:31.991Z"}
+{"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:36:31.999Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:36:32.062Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:36:32.131Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:36:32.139Z"}
+{"level":"info","message":"Request received: POST /Login","timestamp":"2024-07-23T10:37:49.032Z"}
+{"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:37:49.057Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:37:49.117Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:37:49.162Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:37:49.169Z"}
+{"level":"info","message":"Request received: GET /singlepost/669e025dd274f0ba8e789c9d","timestamp":"2024-07-23T10:38:45.985Z"}
+{"level":"info","message":"Request received: GET /singlepost/Comments/669e025dd274f0ba8e789c9d","timestamp":"2024-07-23T10:38:45.994Z"}
+{"level":"info","message":"Request received: POST /Login","timestamp":"2024-07-23T10:39:57.632Z"}
+{"level":"info","message":"someone loggedIn","timestamp":"2024-07-23T10:39:57.639Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:39:57.722Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:39:57.736Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:39:57.867Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:39:57.872Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:39:57.889Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:39:57.902Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:43:21.825Z"}
+{"level":"info","message":"Request received: GET /Posts","timestamp":"2024-07-23T10:43:21.837Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:43:21.907Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:43:21.911Z"}
+{"level":"info","message":"Request received: GET /Posts/669e00ced274f0ba8e789c85/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:43:21.926Z"}
+{"level":"info","message":"Request received: GET /Posts/669e025dd274f0ba8e789c9d/668fb518f044e6fcb73ab968/likeStatus","timestamp":"2024-07-23T10:43:21.930Z"}

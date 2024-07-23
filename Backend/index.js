@@ -69,10 +69,10 @@ const mailOptions = {
 // Schedule the cron job to run every minute
 cron.schedule('* * * * *', () => {
     transporter.sendMail(mailOptions, function (err, info) {
-        if (err)
-            console.log(err);
-        else
-            console.log(info);
+        //if (err)
+           // console.log(err);
+       // else
+           // console.log(info);
     });
 });
 //cronjob end

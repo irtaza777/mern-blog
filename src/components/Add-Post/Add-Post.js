@@ -107,7 +107,7 @@ const AddPost = () => {
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={(e) => e.preventDefault()}>
                         <Form.Group className="mb-3">
-                            <Form.Label>Title</Form.Label>
+                            <Form.Label><b>Title</b></Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter blog title"
@@ -122,19 +122,19 @@ const AddPost = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Body</Form.Label>
+                            <Form.Label><b>Body</b></Form.Label>
                             <ReactQuill
                                 theme="snow"
                                 value={body}
                                 onChange={setBody}
                                 placeholder="Enter blog content"
-                                style={{ height: '200px' }} // Set height of the editor
+                                style={{ height: '400px' }} // Set height of the editor
                             />
                             {error && !body && <span style={{ color: "red" }}>Please enter blog content.</span>}
                         </Form.Group>
-                        
+                        <br></br>
                         <Form.Group className="mb-3">
-                            <Form.Label>Image</Form.Label>
+                            <Form.Label><b>Image</b></Form.Label>
                             <Form.Control
                                 type="file"
                                 onChange={handleImageChange}
