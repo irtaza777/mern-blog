@@ -1,7 +1,7 @@
 .navbar-nav {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 2rem;
     text-decoration: none;
 
   }
