@@ -42,10 +42,12 @@ app.use(cors());
 
 //to accept json req
 app.use(express.json())
+
+//logs
 app.use((req, res, next) => {
     logger.info(`Request received: ${req.method} ${req.url}`);
     next();
-  });
+});
 
 //cronjob
 function logMessage() {
@@ -70,9 +72,9 @@ const mailOptions = {
 cron.schedule('* * * * *', () => {
     transporter.sendMail(mailOptions, function (err, info) {
         //if (err)
-           // console.log(err);
-       // else
-           // console.log(info);
+        // console.log(err);
+        // else
+        // console.log(info);
     });
 });
 //cronjob end
@@ -386,7 +388,7 @@ app.post('/Posts/:postid/:uid/toggle', verfiytoken, async (req, res) => {
         }
 
         let like = await likes.findOne({ userid: uid, postid: pid });
-        console.log(like);
+        //console.log(like);
 
         if (like) {
 
