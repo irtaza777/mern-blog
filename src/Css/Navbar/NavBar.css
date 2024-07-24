@@ -27,12 +27,13 @@
     color: red;
     cursor: pointer;
     font-weight: bold;
+
   }
   
   .img-rounded {
-    max-height: 111px;
+    max-height: 50px;
     width: 44px;
     border-radius: 100%;
-    margin-left: 10px;
+    margin-left: 2px;
   }
   
