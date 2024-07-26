@@ -2,8 +2,12 @@ const mongoose = require("mongoose")
 
 const postschema = new mongoose.Schema({
 
-    userid: String,
-    title: String,
+  userid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
+}  ,
+title: String,
     body: String,
     draft: Boolean,
     imageUrl: String, // Add this line

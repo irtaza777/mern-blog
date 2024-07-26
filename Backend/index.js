@@ -156,6 +156,7 @@ app.post("/Add-Post", verfiytoken, upload.single('image'), async (req, resp) => 
 
         });
 
+        await redisclient.del("postsWithUsers");
 
         await newPost.save();
         resp.status(201).json(newPost);
@@ -177,26 +178,53 @@ app.post("/Add-Post", verfiytoken, upload.single('image'), async (req, resp) => 
 
 //Applying Redis in this api
 app.get("/Posts", verfiytoken, async (req, resp) => {
-    // Checking if data is in Redis cache db or not, if yes get it
+    try {
+        // Checking if data is in Redis cache db or not, if yes get it
+        let cachedPosts = await redisclient.get("postsWithUsers");
 
-    let cachedPosts = await redisclient.get("posts");
-    if (cachedPosts) {
-        return resp.json(JSON.parse(cachedPosts));
+        if (cachedPosts) {
+            console.log("redis data " ,cachedPosts)
+
+            return resp.json(JSON.parse(cachedPosts));
+        }
+
+        // Aggregation pipeline to join posts with users
+        const postsWithUsers = await posts.aggregate([
+            { $match: { draft: false } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userid",// in posts collection
+                    foreignField: "_id",// in users collection
+                    as: "user" // stores in new array of user
+                }
+            },
+
+            //This stage deconstructs the user array field from the previous $lookup stage, 
+            //creating a separate document for each element in the user array.
+
+            { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } }, // Unwind the user array
+            { $sort: { createdAt: 1 } } // arrange ascendingly
+
+        ]).exec();// executing loolup
+
+       // console.log('Posts with Users:', postsWithUsers); // Debugging
+
+        // Entering data in Redis
+        await redisclient.set('postsWithUsers', JSON.stringify(postsWithUsers), 'EX', 30);
+
+        if (postsWithUsers.length > 0) {
+            return resp.json(postsWithUsers);
+        }
+        else {
+            resp.json([])
+        }
+    } catch (error) {
+        console.error('Error fetching posts with users:', error);
+        return resp.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // Fetching posts from the database
-    let post = await posts.find({ draft: false });
-
-    // Entering data in Redis
-    await redisclient.set('posts', JSON.stringify(post), 'EX', 30);
-
-    if (post.length > 0) {
-        return resp.json(post); // Send a response with the fetched posts
-    } else {
-        return resp.json([]); // Send an empty array if no posts found
-    }
-})
-    ;
+});
+;
 //drafted post with id frontend draftpost
 app.get("/Posts/:id", verfiytoken, async (req, resp) => {
     const currentUsrId = req.params.id;

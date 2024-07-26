@@ -42,10 +42,10 @@ const Login = () => {
     };
 
     return (
-        <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Container className="d-flex justify-content-center align-items-center mt-10" >
             <Row className="w-100">
                 <Col md={6} lg={4} className="mx-auto">
-                    <div className="text-center mb-4">
+                    <div className="text-center mb-4" style={{ marginTop: '50px' }}>
                         <h1 className="mb-3">Login</h1>
                         <p className="lead">Access your account to add & manage your posts.</p>
                     </div>
