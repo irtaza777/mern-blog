@@ -21,7 +21,7 @@ const DraftPosts = () => {
         const url = `http://localhost:4500/Posts/${id}`;
 
         axios.get(url, { headers })
-            .then((res) => setPosts(res.data.post )) // Set fetched posts to state
+            .then((res) => setPosts(res.data.post || [] )) // Set fetched posts to state
             .catch((error) => console.error('Error fetching posts:', error));
     }, [id]); // Dependency array ensures useEffect runs when id changes
 
@@ -77,7 +77,8 @@ const DraftPosts = () => {
                     <tr>
                         <th>Title</th>
                         <th>Body</th>
-                        <th>Operations</th>
+                        <th>Banner image</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,6 +90,13 @@ const DraftPosts = () => {
                                     <td>                                
                                         <PostContent content={item.body} />
                                     </td>
+                                    <td><img
+                                variant="top"
+                                src={item.imageUrl}
+                                alt="data"
+                                className="rounded-top"
+                                style={{ maxHeight: '200px', width: '200px', borderRadius: '10px' }}
+                            /></td>
                                     <td>
                                         <button className="btn btn-danger" onClick={() => deletePost(item._id)}>
                                             <FontAwesomeIcon icon={faTrashAlt} />

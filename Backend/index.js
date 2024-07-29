@@ -244,11 +244,15 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
 app.get("/Posts/:id", verfiytoken, async (req, resp) => {
     const currentUsrId = req.params.id;
 
-    let post = await posts.find();
-    post = await post.filter(post => post.userid === currentUsrId && post.draft !== false)
+    let post = await posts.find({
+        $and: [
+            { userid: currentUsrId },
+            { draft: true },
+        ]
+    });
 
-    if (post) {
-        resp.send({ "message": "Success", "post": post })
+    if (post.length > 0) {
+        resp.send({ "msg": "Success", "post": post })
     }
     else {
         resp.send([])
