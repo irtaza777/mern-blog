@@ -66,36 +66,40 @@ const AddPost = () => {
     // Function to save a draft post
     const addDraft = async () => {
         // Validate required fields
-        if (!title || !body) {
-            setError("Please fill in all required fields.");
+        if (!title || !body || !image) {
+            setError("Please fill in all required fields and upload an image.");
             return false;
         }
 
-        // Prepare data for draft
-        const data = {
-            userid,
-            title,
-            body,
-            draft: true
-        };
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('userid', userid);
+        formData.append('title', title);
+        formData.append('body', body);
+        formData.append('draft', true);
+        formData.append('image', image);
 
         try {
             // Prepare headers with authorization token
             const token = JSON.parse(localStorage.getItem('token'));
             const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
             };
-            // Send POST request to save the draft
+            // Send POST request to add the post
             const url = "http://localhost:4500/Add-Post";
-            const res = await axios.post(url, data, { headers });
+            const res = await axios.post(url, formData, headers);
             console.log(res.data);
-            alert("Draft saved successfully.");
+            alert("Drafted");
+            navigate("/Draft-Posts"); // Navigate to the posts page
         } catch (error) {
-            console.error('Error saving draft:', error);
-            setError("Failed to save draft. Please try again later.");
+            console.error('Error publishing post:', error);
+            setError("Failed to publish post. Please try again later.");
         }
     };
+
 
     return (
         <Container className="mt-4">
