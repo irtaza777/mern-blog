@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.clear();
 
-      window.location.href = '/Home';
+      window.location.href = '/';
     }
     return Promise.reject(error);
   }

@@ -27,7 +27,8 @@ const fetchYourpost = async () => {
     const url = `http://localhost:4500/Your-Posts/${id}`;
 
     const response = await axios.get(url, { headers });
-    return response.data.post // in backend we did post in 2nd resp after showing messaage
+    
+    return await response.data.post  || [] // in backend we did post in 2nd resp after showing messaage
 
 
 

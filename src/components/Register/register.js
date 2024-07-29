@@ -50,6 +50,8 @@ const Register = () => {
 
       // Store user data in local storage and navigate to login
       localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.clear(); // Clear user authentication data from localStorage
+
       navigate('/Login');
     } catch (error) {
       console.error('Registration error', error);

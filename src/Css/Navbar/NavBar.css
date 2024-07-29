@@ -31,7 +31,7 @@
   }
   
   .img-rounded {
-    max-height: 50px;
+    height: 40px;
     width: 44px;
     border-radius: 100%;
     margin-left: 2px;

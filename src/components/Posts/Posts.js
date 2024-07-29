@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"; // Import Link for navigation
 import axiosInstance from '../../utils/axios'; // Import axios instance for API requests
 import Likes from "./Likes"; // Import Likes component
 import { truncateText } from "../../utils/truncatetext"; // Import truncateText utility function
-import { Container, Row, Col, Card, Dropdown, DropdownButton } from "react-bootstrap"; // Import Bootstrap components
+import { Container, Row, Col, Card, Dropdown, DropdownButton, Form, InputGroup, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import FontAwesomeIcon for icons
 import { faSearch } from '@fortawesome/free-solid-svg-icons'; // Import search icon
 import PostContent from "../../utils/dangerousinnerhtml"; // Import PostContent utility function
@@ -24,9 +24,11 @@ const Posts = () => {
 
   // Function to fetch all posts
   const fetchAllPosts = async () => {
+    console.log(posts.name)
     try {
       const response = await axiosInstance.get('/Posts');
       setPosts(response.data || []); // Ensure posts is an array, even if the response is empty
+      console.log(response)
     } catch (err) {
       console.error('Error fetching posts:', err);
     }
@@ -52,7 +54,7 @@ const Posts = () => {
   };
 
   // Filter posts based on search term
-  const filteredPosts =  currentPosts.filter(post =>
+  const filteredPosts = currentPosts.filter(post =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -73,18 +75,22 @@ const Posts = () => {
       <div className="container">
         <header className="mb-4 mt-4">
           <h2>All Posts</h2>
+
+          {/* search bar and droptown section */}
+
           <div className="row mb-3">
             <div className="col-lg-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search posts from page..."
-                value={searchTerm}
-                onChange={searchHandle}
-              />
-            </div>
-            <div className="col-lg-4">
-              <FontAwesomeIcon icon={faSearch} />
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Search posts..."
+                  value={searchTerm}
+                  onChange={searchHandle}
+                />
+                <Button variant="outline-secondary">
+                  <FontAwesomeIcon icon={faSearch} />
+                </Button>
+              </InputGroup>
             </div>
             {/* Dropdown to select a specific post */}
             <div className="col-lg-4">
@@ -100,6 +106,8 @@ const Posts = () => {
               </DropdownButton>
             </div>
           </div>
+          {/* search bar and droptown section END */}
+
         </header>
         <div className="row">
           {displayPosts.length > 0 ? displayPosts.map((item) => (
@@ -123,9 +131,20 @@ const Posts = () => {
                     Read more
                   </Link>
                 </Card.Body>
-                <Card.Footer className="d-flex justify-content-between align-items-center">
-                  <small className="text-muted">{new Date(item.createdAt).toLocaleDateString()}</small>
-                  <Likes post={item} />
+                <Card.Footer className="d-flex align-items-center">
+                  {item.user && (
+                    <>
+                      <img
+                        className="img-rounded"
+                        src={item.user.imageUrl}
+                        alt={item.user.name}
+                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                      />
+                      <b className="text ml-1">{item.user.name}</b>
+                    </>
+                  )}
+                  <small className="text-muted ml-auto p-2">{new Date(item.createdAt).toLocaleDateString()}</small>
+                  <Likes post={item} className="m-2" />
                 </Card.Footer>
               </Card>
             </Col>
