@@ -16,6 +16,10 @@ const jwt = require("jsonwebtoken")
 // JWT token key
 const jwtkey = "blog "
 
+// bcrypt library to hash password
+const bcrypt = require("bcrypt")
+
+
 //using twilio to generate an orginal sms to your phone number
 const accountSid = 'AC56def539c19b1b77dd5af1c59c970b08';
 const authToken = 'a99c70c5a4406376320e63745a21eaf9';
@@ -102,36 +106,48 @@ app.post('/Register', upload.single('image'), async (req, res) => {
         imageUrl: result.secure_url
     });
 
-    let savedUser = await user.save();
-    savedUser = savedUser.toObject();
-    delete savedUser.password;
+    const saveuser = await user.save()
 
-    res.send(savedUser);
+    res.send(saveuser);
 });
 //Login Api front end is Login.js
 app.post("/Login", async (req, resp) => {
-    if (req.body.password && req.body.email) {
+    const { email, password } = req.body;
 
-        let user = await users.findOne(req.body).select("-password")
-        if (user) {
-            jwt.sign({ user }, jwtkey, { expiresIn: "2h" }, (err, token) => {
-                if (err) {
-                    resp.send("Something went wrong")
+    if (email && password) {
+        try {
+            // Find the user by email
+            let user = await users.findOne({ email }).select("+password"); // Include password for comparison
+            if (user) {
+                // Compare the provided password with the hashed password in the database
+                const isMatch = await bcrypt.compare(password, user.password);
+
+                if (isMatch) {
+                    // Password matches, generate a JWT token
+                    jwt.sign({ id: user._id, email: user.email }, jwtkey, { expiresIn: "2h" }, (err, token) => {
+                        if (err) {
+                            return resp.status(500).send("Something went wrong");
+                        }
+                        // Send response with user details (excluding password) and token
+                        const userWithoutPassword = user.toObject();
+                        delete userWithoutPassword.password;
+                        resp.send({ user: userWithoutPassword, auth: token });
+                    });
+                    logger.info('User logged in successfully');
+                } else {
+                    resp.status(401).send({ result: 'Invalid email or password' });
                 }
-                resp.send({ user, auth: token })//auth with token
-            })
-            logger.info('someone loggedIn');
-
+            } else {
+                resp.status(401).send({ result: 'Invalid email or password' });
+            }
+        } catch (error) {
+            console.error(error);
+            resp.status(500).send({ result: 'An error occurred' });
         }
-        else {
-
-            resp.send([])// sending response whatever from frontend
-        }
-
+    } else {
+        resp.status(400).send({ result: 'Email and password are required' });
     }
-    else resp.send({ result: 'No user found' })
-
-})
+});
 
 //Adding post Api front end is AddPost/AddPost.js
 
@@ -183,7 +199,6 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
         let cachedPosts = await redisclient.get("postsWithUsers");
 
         if (cachedPosts) {
-            console.log("redis data " ,cachedPosts)
 
             return resp.json(JSON.parse(cachedPosts));
         }
@@ -206,18 +221,18 @@ app.get("/Posts", verfiytoken, async (req, resp) => {
             { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } }, // Unwind the user array
             { $sort: { createdAt: 1 } } // arrange ascendingly
 
-        ]).exec();// executing loolup
+        ]).exec();// executing lookup
 
-       // console.log('Posts with Users:', postsWithUsers); // Debugging
+        // console.log('Posts with Users:', postsWithUsers); // Debugging
 
         // Entering data in Redis
         await redisclient.set('postsWithUsers', JSON.stringify(postsWithUsers), 'EX', 30);
 
         if (postsWithUsers.length > 0) {
-            return resp.json(postsWithUsers);
+            return resp.send(postsWithUsers);
         }
         else {
-            resp.json([])
+            resp.send([])
         }
     } catch (error) {
         console.error('Error fetching posts with users:', error);
@@ -245,16 +260,6 @@ app.get("/Posts/:id", verfiytoken, async (req, resp) => {
 app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
 
     const currentUsrId = req.params.id;
-    //console.log(currentUsrId)
-    //method 1
-    //find all posts than filte on basis of req.query id
-    //let post = await posts.find();
-    //let post = await posts.filter(post => post.userid == x)
-    //method 2
-    //find all posts than filte on basis of req.query id
-
-
-
 
     let post = await posts.find({
         $and: [
@@ -263,17 +268,13 @@ app.get("/Your-Posts/:id", verfiytoken, async (req, resp) => {
         ]
     });
 
-    //let post = await posts.find(post => post.userid === currentUsrId && post.draft !== true)
-    //     post = await post.filter(post => post.userid === currentUsrId && post.draft !== false)
+    if (post.length > 0) {
+        resp.send({ "msg": "Success", "post": post })
+    }
+    else {
+        resp.send([])
 
-    // if(post.length>0){
-    //      resp.send(post)
-    // }
-    // else{
-    //              resp.send("No record")
-
-    // }
-    resp.send({ "msg": "Success", "post": post })
+    }
 })
 //api of singlepost only that post frontend singlepost.js
 app.get("/singlepost/:id", verfiytoken, async (req, resp) => {

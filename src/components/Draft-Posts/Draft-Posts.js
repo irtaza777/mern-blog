@@ -21,7 +21,7 @@ const DraftPosts = () => {
         const url = `http://localhost:4500/Posts/${id}`;
 
         axios.get(url, { headers })
-            .then((res) => setPosts(res.data.post)) // Set fetched posts to state
+            .then((res) => setPosts(res.data.post )) // Set fetched posts to state
             .catch((error) => console.error('Error fetching posts:', error));
     }, [id]); // Dependency array ensures useEffect runs when id changes
 
