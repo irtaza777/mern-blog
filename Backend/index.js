@@ -334,13 +334,33 @@ app.get("/singlepost/Comments/:id", verfiytoken, async (req, resp) => {
 
     }
 })
-//deleting a comment of that user of that id and id oc comment
+//deleting a comment of that user of that id and id of comment
 app.delete("/Comments/:userid/:postid/:commentid", verfiytoken, async (req, resp) => {
-    console.log("helloCommentdelete")
     let deleteOne = await comments.deleteOne({ $and: [{ userid: req.params.userid }, { pid: req.params.postid }, { _id: req.params.commentid }] })
         ;
     resp.send(deleteOne)
 
+});
+// Edit a comment of user of post
+app.put('/Comments/:userid/:postid/:cid', verfiytoken, async (req, res) => {
+    const { userid, postid, cid } = req.params;
+    const { comment } = req.body;
+    console.log("updated C")
+    console.log(cid)
+    try {
+        const updatedComment = await comments.findOneAndUpdate(
+            { _id: cid, userid: userid, pid: postid },
+            { comment: comment },
+            { new: true }
+        );
+        if (updatedComment) {
+            res.status(200).json(updatedComment);
+        } else {
+            res.status(404).json({ message: 'Comment not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 //update post on if fist get it api front end update-post
 app.get("/Update-Post/:id", verfiytoken, async (req, resp) => {
