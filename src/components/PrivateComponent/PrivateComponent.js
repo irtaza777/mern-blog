@@ -1,11 +1,34 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const PrivateComponent = () => {
-
+    const [showMessage, setShowMessage] = useState(false);
+    const [redirect, setRedirect] = useState(false);
     const auth = localStorage.getItem('user');
 
-    return auth ? <Outlet /> : <Navigate to="/" />
-}
+    useEffect(() => {
+        if (!auth) {
+            setShowMessage(true);
+            setTimeout(() => {
+                setRedirect(true);
+            }, 1000); // 2 seconds delay before redirect
+        }
+    }, [auth]);
 
-export default PrivateComponent
+    if (!auth && redirect) {
+        return <Navigate to="/" />;
+    }
+
+    return (
+        <>
+            {showMessage && (
+                <div style={{ color: 'red', textAlign: 'center', margin: '20px 0' }}>
+                    You need to log in to access this page.
+                </div>
+            )}
+            {auth ? <Outlet /> : null}
+        </>
+    );
+};
+
+export default PrivateComponent;

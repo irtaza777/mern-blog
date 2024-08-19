@@ -24,7 +24,6 @@ const Posts = () => {
 
   // Function to fetch all posts
   const fetchAllPosts = async () => {
-    console.log(posts.name)
     try {
       const response = await axiosInstance.get('/Posts');
       setPosts(response.data || []); // Ensure posts is an array, even if the response is empty
@@ -138,7 +137,7 @@ const Posts = () => {
                         className="img-rounded"
                         src={item.user.imageUrl}
                         alt={item.user.name}
-                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                        style={{ width: '35px', height: '35px', borderRadius: '50%' }}
                       />
                       <b className="text ml-1">{item.user.name}</b>
                     </>
