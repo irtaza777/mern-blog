@@ -404,19 +404,21 @@ app.delete("/Posts/:draftpostid", verfiytoken, async (req, resp) => {
     resp.send(result)
 
 });
-//deleting singlepost with all comments of it yourpost.js
+//deleting singlepost with all comments and likes of it yourpost.js
 app.delete("/Poosts/:postid", verfiytoken, async (req, resp) => {
     await posts.deleteOne({ _id: req.params.postid });
-    await likes.deleteOne({ postid: req.params.postid });
+    await likes.deleteMany({ postid: req.params.postid });
 
 
     await comments.deleteMany({ pid: req.params.postid });
+    await redisclient.del("postsWithUsers");
+
     resp.send({ "msg": true })
 
 });
 
 
-//deleting user,s all posts api with all its comment front end is yourpost.js(id is of user)
+//deleting user,s all posts api with all its comment/likes front end is yourpost.js(id is of user)
 app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
     // console.log("All")
     await comments.deleteMany({ userid: req.params.Delid })
@@ -424,6 +426,7 @@ app.delete("/DELUPosts/:Delid", verfiytoken, async (req, resp) => {
 
     let deleteall = await posts.deleteMany({ userid: req.params.Delid });
     //console.log(deleteall)
+    await redisclient.del("postsWithUsers");
 
     resp.send(deleteall)
 
@@ -516,6 +519,8 @@ app.get('/Posts/:postId/:userId/likeStatus', async (req, res) => {
 
     try {
         const like = await likes.findOne({ postid: postId, userid: userId });
+        await redisclient.del("postsWithUsers");
+
         res.json({ liked: like ? like.liked : false });
     } catch (error) {
         res.status(500).json({ message: error.message });

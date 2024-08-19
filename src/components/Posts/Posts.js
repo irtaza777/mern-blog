@@ -15,7 +15,7 @@ const Posts = () => {
   const [postsPerPage] = useState(6); // State for number of posts per page
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const [selectedPost, setSelectedPost] = useState(null); // State for selected post
-  const wordLimit = 30; // Set word limit for post content
+  const wordLimit = 40; // Set word limit for post content
 
   // Fetch all posts on component mount
   useEffect(() => {
