@@ -10,7 +10,7 @@ const likes = require('./db/likes/likes')
 const logger = require('./logs/logger');
 
 // redis client for cache db
-const redisclient = require('./redisclient')
+const redisclient = require('./redisclient/redisclient')
 // JWT token
 const jwt = require("jsonwebtoken")
 // JWT token key
