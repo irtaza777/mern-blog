@@ -8,7 +8,7 @@ import PostContent from '../../utils/dangerousinnerhtml';
 const SinglePost = () => {
     // Retrieve the user ID from localStorage and set it in state
     const auth = localStorage.getItem('user');
-    const uid = JSON.parse(auth)._id;
+    const uid = auth && JSON.parse(auth)._id;
     const [userid, setId] = useState(uid);
     
     // State variables for the post, comments, comment input, and error handling
